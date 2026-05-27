@@ -298,21 +298,19 @@
 
     #form-submit-btn:hover { background-color: #b8c900; }
 
-    #form-cancel-btn {
-      display: none;
+    /* ── Inline edit inputs inside table rows ── */
+    #acts-table td input,
+    #acts-table td select {
       font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
-      font-weight: 800;
-      font-size: 14px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      background-color: #000;
-      color: #fff;
-      border: 1px solid #000;
-      padding: 4px 14px;
-      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 2px 5px;
+      border: 1px solid #2194ad;
+      background-color: #fff;
+      color: #000;
+      width: 100%;
+      box-sizing: border-box;
     }
-
-    #form-cancel-btn:hover { background-color: #333; }
   </style>
 </head>
 <body>
@@ -356,9 +354,29 @@
 
 </div>
 
-<!-- ── Act editor ── -->
-<div id="editor-section">
-  <h2>Edit Schedule <button class="btn btn-reset" id="reset-btn">Reset to defaults</button></h2>
+<!-- ── Add Act form ── -->
+<div id="editor-section" style="max-width:1176px; margin: 24px auto 0; font-family: 'Barlow Condensed', 'Arial Black', sans-serif;">
+  <h2 style="font-size:22px; font-weight:800; letter-spacing:0.07em; text-transform:uppercase; margin-bottom:12px; color:#000;">Add Act</h2>
+  <div id="add-form">
+    <select name="day">
+      <option value="0">Thursday</option>
+      <option value="1">Friday</option>
+      <option value="2">Saturday</option>
+      <option value="3">Sunday</option>
+    </select>
+    <input name="name"  type="text" placeholder="Act name" autocomplete="off">
+    <input name="stage" type="text" placeholder="Stage" autocomplete="off">
+    <input name="start" type="text" placeholder="4:30" autocomplete="off">
+    <input name="end"   type="text" placeholder="5:30 (optional)" autocomplete="off">
+    <button id="form-submit-btn">Add Act</button>
+  </div>
+</div>
+
+<!-- ── Act table (below schedule) ── -->
+<div id="acts-table-section" style="max-width:1176px; margin: 32px auto 0; font-family: 'Barlow Condensed', 'Arial Black', sans-serif;">
+  <h2 style="font-size:22px; font-weight:800; letter-spacing:0.07em; text-transform:uppercase; margin-bottom:12px; color:#000;">
+    Edit Schedule <button class="btn btn-reset" id="reset-btn">Reset to defaults</button>
+  </h2>
   <table id="acts-table">
     <thead>
       <tr>
@@ -372,20 +390,6 @@
     </thead>
     <tbody id="acts-tbody"></tbody>
   </table>
-  <div id="add-form">
-    <select name="day">
-      <option value="0">Thursday</option>
-      <option value="1">Friday</option>
-      <option value="2">Saturday</option>
-      <option value="3">Sunday</option>
-    </select>
-    <input name="name"  type="text" placeholder="Act name" autocomplete="off">
-    <input name="stage" type="text" placeholder="Stage" autocomplete="off">
-    <input name="start" type="text" placeholder="4:30" autocomplete="off">
-    <input name="end"   type="text" placeholder="5:30 (optional)" autocomplete="off">
-    <button id="form-submit-btn">Add Act</button>
-    <button id="form-cancel-btn">Cancel</button>
-  </div>
 </div>
 
 <script>
@@ -580,56 +584,71 @@
 
     sorted.forEach(({ act, originalIndex }) => {
       const row = document.createElement('tr');
-      if (originalIndex === editingIndex) { row.classList.add('editing-row'); }
 
-      row.innerHTML = `
-        <td>${DAY_LABELS[act.day]}</td>
-        <td>${act.name}</td>
-        <td>${act.stage}</td>
-        <td>${act.start}</td>
-        <td>${act.end || ''}</td>
-        <td style="white-space:nowrap">
-          <button class="btn" onclick="startEdit(${originalIndex})">Edit</button>
-          <button class="btn btn-delete" onclick="deleteAct(${originalIndex})">Delete</button>
-        </td>`;
+      if (originalIndex === editingIndex) {
+        // Inline edit row
+        row.classList.add('editing-row');
+        row.innerHTML = `
+          <td><select name="ie-day">
+            <option value="0">Thursday</option>
+            <option value="1">Friday</option>
+            <option value="2">Saturday</option>
+            <option value="3">Sunday</option>
+          </select></td>
+          <td><input name="ie-name"  type="text" autocomplete="off"></td>
+          <td><input name="ie-stage" type="text" autocomplete="off"></td>
+          <td><input name="ie-start" type="text" autocomplete="off"></td>
+          <td><input name="ie-end"   type="text" autocomplete="off"></td>
+          <td style="white-space:nowrap">
+            <button class="btn" onclick="saveInlineEdit(${originalIndex})">Save</button>
+            <button class="btn btn-delete" onclick="cancelInlineEdit()">Cancel</button>
+          </td>`;
+        // Set values safely after innerHTML to avoid escaping issues
+        row.querySelector('[name=ie-day]').value   = act.day;
+        row.querySelector('[name=ie-name]').value  = act.name;
+        row.querySelector('[name=ie-stage]').value = act.stage;
+        row.querySelector('[name=ie-start]').value = act.start;
+        row.querySelector('[name=ie-end]').value   = act.end || '';
+      } else {
+        row.innerHTML = `
+          <td>${DAY_LABELS[act.day]}</td>
+          <td>${act.name}</td>
+          <td>${act.stage}</td>
+          <td>${act.start}</td>
+          <td>${act.end || ''}</td>
+          <td style="white-space:nowrap">
+            <button class="btn" onclick="startEdit(${originalIndex})">Edit</button>
+            <button class="btn btn-delete" onclick="deleteAct(${originalIndex})">Delete</button>
+          </td>`;
+      }
+
       tbody.appendChild(row);
     });
   }
 
-  function getFormValues() {
-    const form = document.getElementById('add-form');
-    return {
-      day:   parseInt(form.querySelector('[name=day]').value),
-      name:  form.querySelector('[name=name]').value.trim(),
-      stage: form.querySelector('[name=stage]').value.trim(),
-      start: form.querySelector('[name=start]').value.trim(),
-      end:   form.querySelector('[name=end]').value.trim() || undefined,
-    };
-  }
-
-  function resetForm() {
-    const form = document.getElementById('add-form');
-    form.querySelector('[name=day]').value   = '0';
-    form.querySelector('[name=name]').value  = '';
-    form.querySelector('[name=stage]').value = '';
-    form.querySelector('[name=start]').value = '';
-    form.querySelector('[name=end]').value   = '';
-    document.getElementById('form-submit-btn').textContent = 'Add Act';
-    document.getElementById('form-cancel-btn').style.display = 'none';
-    editingIndex = -1;
-  }
-
   function startEdit(index) {
     editingIndex = index;
-    const act  = acts[index];
-    const form = document.getElementById('add-form');
-    form.querySelector('[name=day]').value   = act.day;
-    form.querySelector('[name=name]').value  = act.name;
-    form.querySelector('[name=stage]').value = act.stage;
-    form.querySelector('[name=start]').value = act.start;
-    form.querySelector('[name=end]').value   = act.end || '';
-    document.getElementById('form-submit-btn').textContent = 'Save';
-    document.getElementById('form-cancel-btn').style.display = '';
+    renderTable();
+  }
+
+  function saveInlineEdit(index) {
+    const tbody = document.getElementById('acts-tbody');
+    const day   = parseInt(tbody.querySelector('[name=ie-day]').value);
+    const name  = tbody.querySelector('[name=ie-name]').value.trim();
+    const stage = tbody.querySelector('[name=ie-stage]').value.trim();
+    const start = tbody.querySelector('[name=ie-start]').value.trim();
+    const end   = tbody.querySelector('[name=ie-end]').value.trim() || undefined;
+    if (!name || !stage || !start) { return; }
+    acts[index] = { day, name, stage, start, end };
+    saveActs();
+    clearActBlocks();
+    renderActs();
+    editingIndex = -1;
+    renderTable();
+  }
+
+  function cancelInlineEdit() {
+    editingIndex = -1;
     renderTable();
   }
 
@@ -639,27 +658,26 @@
     clearActBlocks();
     renderActs();
     renderTable();
-    if (editingIndex === index) { resetForm(); }
   }
 
   document.getElementById('form-submit-btn').addEventListener('click', () => {
-    const values = getFormValues();
-    if (!values.name || !values.stage || !values.start) { return; }
-
-    if (editingIndex >= 0) {
-      acts[editingIndex] = values;
-    } else {
-      acts.push(values);
-    }
-
+    const form  = document.getElementById('add-form');
+    const day   = parseInt(form.querySelector('[name=day]').value);
+    const name  = form.querySelector('[name=name]').value.trim();
+    const stage = form.querySelector('[name=stage]').value.trim();
+    const start = form.querySelector('[name=start]').value.trim();
+    const end   = form.querySelector('[name=end]').value.trim() || undefined;
+    if (!name || !stage || !start) { return; }
+    acts.push({ day, name, stage, start, end });
     saveActs();
     clearActBlocks();
     renderActs();
     renderTable();
-    resetForm();
+    form.querySelector('[name=name]').value  = '';
+    form.querySelector('[name=stage]').value = '';
+    form.querySelector('[name=start]').value = '';
+    form.querySelector('[name=end]').value   = '';
   });
-
-  document.getElementById('form-cancel-btn').addEventListener('click', resetForm);
 
   document.getElementById('reset-btn').addEventListener('click', () => {
     if (!confirm('Reset all acts to the defaults? This cannot be undone.')) { return; }
@@ -668,7 +686,6 @@
     clearActBlocks();
     renderActs();
     renderTable();
-    resetForm();
   });
 
   // ─────────────────────────────────────────────
