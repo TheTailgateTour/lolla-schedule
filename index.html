@@ -21,7 +21,10 @@
     .logo-header {
       text-align: center;
       margin-bottom: 16px;
-      max-width: 100vw;
+      width: 100vw;
+      margin-left: -24px;
+      box-sizing: border-box;
+      padding: 0 24px;
     }
 
     .logo-header img {
@@ -600,48 +603,48 @@
     { name: 'FINN WOLFHARD',               day: 0, after: true,  stage: 'SUBTERRANEAN' },
     { name: 'ZARA LARSSON',                day: 0, after: true,  stage: 'THE VIC' },
     // Thursday regular
-    { name: 'ASHA BANKS',                  day: 0, after: false, stage: 'T-MOBILE' },
-    { name: 'HAUTE & FREDDY',              day: 0, after: false, stage: 'T-MOBILE' },
-    { name: '5 SECONDS OF SUMMER',         day: 0, after: false, stage: 'T-MOBILE' },
-    { name: 'SOMBR',                       day: 0, after: false, stage: 'T-MOBILE' },
-    { name: 'LORDE',                       day: 0, after: false, stage: 'T-MOBILE' },
-    { name: 'PEARLY DROPS',                day: 0, after: false, stage: 'ALLIANZ' },
-    { name: 'BAD NERVES',                  day: 0, after: false, stage: 'ALLIANZ' },
-    { name: 'SB19',                        day: 0, after: false, stage: 'ALLIANZ' },
-    { name: 'AUDREY HOBERT',               day: 0, after: false, stage: 'ALLIANZ' },
-    { name: 'WET LEG',                     day: 0, after: false, stage: 'ALLIANZ' },
-    { name: 'KLO',                         day: 0, after: false, stage: "PERRY'S" },
-    { name: 'KNOW GOOD',                   day: 0, after: false, stage: "PERRY'S" },
-    { name: 'DEVAULT',                     day: 0, after: false, stage: "PERRY'S" },
-    { name: 'MPH',                         day: 0, after: false, stage: "PERRY'S" },
-    { name: 'BOYS NOIZE',                  day: 0, after: false, stage: "PERRY'S" },
-    { name: 'BORIS BREJCHA',               day: 0, after: false, stage: "PERRY'S" },
-    { name: 'KETTAMA',                     day: 0, after: false, stage: "PERRY'S" },
-    { name: 'WORSHIP',                     day: 0, after: false, stage: "PERRY'S" },
-    { name: 'THE BRAYMORES',               day: 0, after: false, stage: 'BMI' },
-    { name: 'SIMON GROSSMANN',             day: 0, after: false, stage: 'BMI' },
-    { name: 'ELIZABETH NICHOLS',           day: 0, after: false, stage: 'BMI' },
-    { name: 'BELLA KAY',                   day: 0, after: false, stage: 'BMI' },
-    { name: 'CHALK',                       day: 0, after: false, stage: 'BMI' },
-    { name: 'EVENING ELEPHANTS',           day: 0, after: false, stage: 'BMI' },
-    { name: 'KIM THEORY',                  day: 0, after: false, stage: 'AIRBNB' },
-    { name: 'PENELOPE ROAD',               day: 0, after: false, stage: 'AIRBNB' },
-    { name: 'MARLON FUNAKI',               day: 0, after: false, stage: 'AIRBNB' },
-    { name: 'ECCA VANDAL',                 day: 0, after: false, stage: 'AIRBNB' },
-    { name: 'NINAJIRACHI',                 day: 0, after: false, stage: 'AIRBNB' },
-    { name: 'AMBLE',                       day: 0, after: false, stage: 'AIRBNB' },
-    { name: 'CMAT',                        day: 0, after: false, stage: 'AIRBNB' },
-    { name: 'SNOW STRIPPERS',              day: 0, after: false, stage: 'AIRBNB' },
-    { name: 'VIAGRA BOYS',                 day: 0, after: false, stage: 'AIRBNB' },
-    { name: 'FAOUZIA',                     day: 0, after: false, stage: "TITO'S" },
-    { name: 'KINGFISHR',                   day: 0, after: false, stage: "TITO'S" },
-    { name: 'PARIS PALOMA',                day: 0, after: false, stage: "TITO'S" },
-    { name: 'LITTLE SIMZ',                 day: 0, after: false, stage: "TITO'S" },
-    { name: 'BIXBY',                       day: 0, after: false, stage: 'BUD LIGHT' },
-    { name: 'BETWEEN FRIENDS',             day: 0, after: false, stage: 'BUD LIGHT' },
-    { name: 'BLOOD ORANGE',                day: 0, after: false, stage: 'BUD LIGHT' },
-    { name: 'EMPIRE OF THE SUN',           day: 0, after: false, stage: 'BUD LIGHT' },
-    { name: 'JOHN SUMMIT',                 day: 0, after: false, stage: 'BUD LIGHT' },
+    { name: 'ASHA BANKS',                  day: 0, after: false, stage: 'T-MOBILE',  start: '12:45', end: '1:30' },
+    { name: 'HAUTE & FREDDY',              day: 0, after: false, stage: 'T-MOBILE',  start: '2:30',  end: '3:30' },
+    { name: '5 SECONDS OF SUMMER',         day: 0, after: false, stage: 'T-MOBILE',  start: '4:30',  end: '5:30' },
+    { name: 'SOMBR',                       day: 0, after: false, stage: 'T-MOBILE',  start: '6:30',  end: '7:30' },
+    { name: 'LORDE',                       day: 0, after: false, stage: 'T-MOBILE',  start: '8:30' },
+    { name: 'PEARLY DROPS',                day: 0, after: false, stage: 'ALLIANZ',   start: '12:00', end: '12:45' },
+    { name: 'BAD NERVES',                  day: 0, after: false, stage: 'ALLIANZ',   start: '1:30',  end: '2:30' },
+    { name: 'SB19',                        day: 0, after: false, stage: 'ALLIANZ',   start: '3:30',  end: '4:30' },
+    { name: 'AUDREY HOBERT',               day: 0, after: false, stage: 'ALLIANZ',   start: '5:30',  end: '6:30' },
+    { name: 'WET LEG',                     day: 0, after: false, stage: 'ALLIANZ',   start: '7:30',  end: '8:30' },
+    { name: 'KLO',                         day: 0, after: false, stage: "PERRY'S",   start: '12:00', end: '12:30' },
+    { name: 'KNOW GOOD',                   day: 0, after: false, stage: "PERRY'S",   start: '12:45', end: '1:30' },
+    { name: 'DEVAULT',                     day: 0, after: false, stage: "PERRY'S",   start: '1:45',  end: '2:45' },
+    { name: 'MPH',                         day: 0, after: false, stage: "PERRY'S",   start: '3:00',  end: '4:00' },
+    { name: 'BOYS NOIZE',                  day: 0, after: false, stage: "PERRY'S",   start: '4:15',  end: '5:15' },
+    { name: 'BORIS BREJCHA',               day: 0, after: false, stage: "PERRY'S",   start: '5:45',  end: '6:45' },
+    { name: 'KETTAMA',                     day: 0, after: false, stage: "PERRY'S",   start: '7:00',  end: '8:00' },
+    { name: 'WORSHIP',                     day: 0, after: false, stage: "PERRY'S",   start: '8:30',  end: '9:45' },
+    { name: 'THE BRAYMORES',               day: 0, after: false, stage: 'BMI',       start: '1:00',  end: '1:40' },
+    { name: 'SIMON GROSSMANN',             day: 0, after: false, stage: 'BMI',       start: '2:10',  end: '2:50' },
+    { name: 'ELIZABETH NICHOLS',           day: 0, after: false, stage: 'BMI',       start: '3:20',  end: '4:00' },
+    { name: 'BELLA KAY',                   day: 0, after: false, stage: 'BMI',       start: '4:30',  end: '5:10' },
+    { name: 'CHALK',                       day: 0, after: false, stage: 'BMI',       start: '5:40',  end: '6:20' },
+    { name: 'EVENING ELEPHANTS',           day: 0, after: false, stage: 'BMI',       start: '6:50',  end: '7:30' },
+    { name: 'KIM THEORY',                  day: 0, after: false, stage: 'AIRBNB',    start: '12:00', end: '12:30' },
+    { name: 'PENELOPE ROAD',               day: 0, after: false, stage: 'AIRBNB',    start: '12:50', end: '1:30' },
+    { name: 'MARLON FUNAKI',               day: 0, after: false, stage: 'AIRBNB',    start: '1:50',  end: '2:30' },
+    { name: 'ECCA VANDAL',                 day: 0, after: false, stage: 'AIRBNB',    start: '2:50',  end: '3:30' },
+    { name: 'NINAJIRACHI',                 day: 0, after: false, stage: 'AIRBNB',    start: '4:00',  end: '4:45' },
+    { name: 'AMBLE',                       day: 0, after: false, stage: 'AIRBNB',    start: '5:15',  end: '6:00' },
+    { name: 'CMAT',                        day: 0, after: false, stage: 'AIRBNB',    start: '6:30',  end: '7:15' },
+    { name: 'SNOW STRIPPERS',              day: 0, after: false, stage: 'AIRBNB',    start: '7:45',  end: '8:30' },
+    { name: 'VIAGRA BOYS',                 day: 0, after: false, stage: 'AIRBNB',    start: '9:00',  end: '10:00' },
+    { name: 'FAOUZIA',                     day: 0, after: false, stage: "TITO'S",    start: '12:15', end: '1:00' },
+    { name: 'KINGFISHR',                   day: 0, after: false, stage: "TITO'S",    start: '1:45',  end: '2:45' },
+    { name: 'PARIS PALOMA',                day: 0, after: false, stage: "TITO'S",    start: '3:45',  end: '4:45' },
+    { name: 'LITTLE SIMZ',                 day: 0, after: false, stage: "TITO'S",    start: '5:45',  end: '6:45' },
+    { name: 'BIXBY',                       day: 0, after: false, stage: 'BUD LIGHT', start: '1:00',  end: '1:45' },
+    { name: 'BETWEEN FRIENDS',             day: 0, after: false, stage: 'BUD LIGHT', start: '2:45',  end: '3:45' },
+    { name: 'BLOOD ORANGE',                day: 0, after: false, stage: 'BUD LIGHT', start: '4:45',  end: '5:45' },
+    { name: 'EMPIRE OF THE SUN',           day: 0, after: false, stage: 'BUD LIGHT', start: '6:45',  end: '7:45' },
+    { name: 'JOHN SUMMIT',                 day: 0, after: false, stage: 'BUD LIGHT', start: '8:30',  end: '10:00' },
     // Friday afters
     { name: 'ADO',                         day: 1, after: true,  stage: 'ARAGON' },
     { name: 'JAE STEPHENS',                day: 1, after: true,  stage: 'BEAT KITCHEN' },
@@ -1113,6 +1116,8 @@
     } else {
       document.getElementById('add-stage-select').value = match.stage;
     }
+    document.getElementById('add-start').value = match.start || '';
+    document.getElementById('add-end').value   = match.end   || '';
   });
 
   document.getElementById('add-act-name').addEventListener('blur', function () {
