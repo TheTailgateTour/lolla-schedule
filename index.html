@@ -393,7 +393,7 @@
     }
 
     #add-act-name { width: 180px; }
-    #add-form input[name="stage"] { width: 120px; }
+    #add-stage-input { width: 120px; }
     #add-form input[name="start"],
     #add-form input[name="end"]   { width: 80px; }
 
@@ -508,16 +508,10 @@
       <input name="name" type="text" placeholder="Act name" autocomplete="off" id="add-act-name">
       <div id="act-name-dropdown" class="combobox-dropdown"></div>
     </div>
-    <select name="stage" id="add-stage-select">
-      <option value="T-MOBILE">T-MOBILE</option>
-      <option value="ALLIANZ">ALLIANZ (LAKESHORE)</option>
-      <option value="PERRY'S">PERRY'S</option>
-      <option value="BMI">BMI</option>
-      <option value="AIRBNB">AIRBNB (GROVE)</option>
-      <option value="TITO'S">TITO'S</option>
-      <option value="BUD LIGHT">BUD LIGHT</option>
-    </select>
-    <input name="stage-after" id="add-stage-text" type="text" placeholder="Stage name" autocomplete="off" style="display:none; width:120px;">
+    <div class="combobox-wrapper">
+      <input name="stage" type="text" placeholder="Stage" autocomplete="off" id="add-stage-input">
+      <div id="stage-dropdown" class="combobox-dropdown"></div>
+    </div>
     <input name="start" id="add-start" type="text" placeholder="4:30" autocomplete="off">
     <input name="end"   id="add-end"   type="text" placeholder="5:30 (optional)" autocomplete="off">
     <button id="form-submit-btn">Add Act</button>
@@ -563,8 +557,10 @@
   //  actTextColor:   text color in act block       (default black)
   //  stageTextColor: text color in stage block     (default white)
   // ─────────────────────────────────────────────
+  const MAIN_STAGES = ['T-MOBILE', 'ALLIANZ', "PERRY'S", 'BMI', 'AIRBNB', "TITO'S", 'BUD LIGHT'];
+
   const ACTS_MASTER_LIST = [
-    // { name, day (0=Thu,1=Fri,2=Sat,3=Sun,5=Wed), after, stage }
+    // { name, day (0=Thu,1=Fri,2=Sat,3=Sun,5=Wed), after, stage, start?, end? }
     // Wednesday afters
     { name: 'EVENING ELEPHANTS',           day: 5, after: true,  stage: 'BEAT KITCHEN' },
     { name: 'CMAT',                        day: 5, after: true,  stage: 'BOTTOM LOUNGE' },
@@ -602,6 +598,58 @@
     { name: 'PENELOPE ROAD',               day: 0, after: true,  stage: 'SLEEPING VILLAGE' },
     { name: 'FINN WOLFHARD',               day: 0, after: true,  stage: 'SUBTERRANEAN' },
     { name: 'ZARA LARSSON',                day: 0, after: true,  stage: 'THE VIC' },
+    // Friday afters
+    { name: 'ADO',                         day: 1, after: true,  stage: 'ARAGON' },
+    { name: 'JAE STEPHENS',                day: 1, after: true,  stage: 'BEAT KITCHEN' },
+    { name: 'CAMERON WHITCOMB',            day: 1, after: true,  stage: 'BOTTOM LOUNGE' },
+    { name: 'DJ TRIXIE MATTEL',            day: 1, after: true,  stage: 'CERMAK HALL' },
+    { name: 'VILLANELLE',                  day: 1, after: true,  stage: 'COBRA LOUNGE' },
+    { name: 'BOOTS',                       day: 1, after: true,  stage: 'CONCORD' },
+    { name: 'KNOW GOOD',                   day: 1, after: true,  stage: 'CHOP SHOP' },
+    { name: 'CHEZILE',                     day: 1, after: true,  stage: "GARCIA'S" },
+    { name: 'CORTIS',                      day: 1, after: true,  stage: 'HOUSE OF BLUES' },
+    { name: 'BBNO$',                       day: 1, after: true,  stage: 'HOUSE OF BLUES' },
+    { name: 'MOMMA',                       day: 1, after: true,  stage: 'LINCOLN HALL' },
+    { name: 'SIX SEX',                     day: 1, after: true,  stage: 'OUTSET' },
+    { name: 'KHAMARI',                     day: 1, after: true,  stage: 'PARK WEST' },
+    { name: 'HORSEGIIRL',                  day: 1, after: true,  stage: 'RADIUS' },
+    { name: 'NOTION',                      day: 1, after: true,  stage: 'RAMOVA' },
+    { name: 'LOATHE',                      day: 1, after: true,  stage: 'REGGIES' },
+    { name: 'CLIPSE',                      day: 1, after: true,  stage: 'RIVIERA' },
+    { name: 'BEABADOOBEE',                 day: 1, after: true,  stage: 'SALT SHED' },
+    { name: 'PARTYOF2',                    day: 1, after: true,  stage: 'SCHUBAS' },
+    { name: 'LYNY',                        day: 1, after: true,  stage: 'SOUND-BAR' },
+    { name: 'LUCY BEDROQUE',               day: 1, after: true,  stage: 'SUBTERRANEAN' },
+    { name: 'HAUTE & FREDDY',              day: 1, after: true,  stage: 'THALIA HALL' },
+    { name: 'SPACEY JANE',                 day: 1, after: true,  stage: 'THE VIC' },
+    // Saturday afters
+    { name: 'DUKE DUMONT',                 day: 2, after: true,  stage: 'CERMAK HALL' },
+    { name: 'LOS RETROS',                  day: 2, after: true,  stage: 'COBRA LOUNGE' },
+    { name: 'ALISON WONDERLAND',           day: 2, after: true,  stage: 'CONCORD' },
+    { name: 'ADÉLA',                       day: 2, after: true,  stage: 'CHOP SHOP' },
+    { name: 'AFTER',                       day: 2, after: true,  stage: 'EMPTY BOTTLE' },
+    { name: 'FORST CHILDREN + NINAJIRACHI', day: 2, after: true, stage: 'EPIPHANY HALL' },
+    { name: 'NEW CONSTELLATIONS',          day: 2, after: true,  stage: "GARCIA'S" },
+    { name: 'THE STORY SO FAR',            day: 2, after: true,  stage: 'HOUSE OF BLUES' },
+    { name: 'INJI',                        day: 2, after: true,  stage: 'LINCOLN HALL' },
+    { name: 'HOT MULLIGAN',                day: 2, after: true,  stage: 'METRO' },
+    { name: 'MONALEO',                     day: 2, after: true,  stage: 'OUTSET' },
+    { name: 'KWN',                         day: 2, after: true,  stage: 'PARK WEST' },
+    { name: 'MAX STYLER',                   day: 2, after: true,  stage: 'RADIUS' },
+    { name: 'FREDDIE GIBBS',               day: 2, after: true,  stage: 'RAMOVA' },
+    { name: 'DESTIN CONRAD',               day: 2, after: true,  stage: 'REGGIES' },
+    { name: '5 SECONDS OF SUMMER',         day: 2, after: true,  stage: 'SALT SHED' },
+    { name: 'WHATMORE',                    day: 2, after: true,  stage: 'SCHUBAS' },
+    { name: 'WHETHAN',                     day: 2, after: true,  stage: 'SOUND-BAR' },
+    { name: 'VANDELUX',                    day: 2, after: true,  stage: 'SLEEPING VILLAGE' },
+    { name: 'FAKEMINK',                    day: 2, after: true,  stage: 'SUBTERRANEAN' },
+    { name: 'AMBER MARK',                  day: 2, after: true,  stage: 'THALIA HALL' },
+    { name: 'JADE',                        day: 2, after: true,  stage: 'THE VIC' },
+    // Sunday afters
+    { name: 'STELLA LEFTY',                day: 3, after: true,  stage: 'BEAT KITCHEN' },
+    { name: 'WATER FROM YOUR EYES',        day: 3, after: true,  stage: 'EMPTY BOTTLE' },
+    { name: 'ETHEN CAIN',                  day: 3, after: true,  stage: 'METRO' },
+    { name: 'WAYLON WYATT',                day: 3, after: true,  stage: 'SCHUBAS' },
     // Thursday regular
     { name: 'ASHA BANKS',                  day: 0, after: false, stage: 'T-MOBILE',  start: '12:45', end: '1:30' },
     { name: 'HAUTE & FREDDY',              day: 0, after: false, stage: 'T-MOBILE',  start: '2:30',  end: '3:30' },
@@ -645,58 +693,139 @@
     { name: 'BLOOD ORANGE',                day: 0, after: false, stage: 'BUD LIGHT', start: '4:45',  end: '5:45' },
     { name: 'EMPIRE OF THE SUN',           day: 0, after: false, stage: 'BUD LIGHT', start: '6:45',  end: '7:45' },
     { name: 'JOHN SUMMIT',                 day: 0, after: false, stage: 'BUD LIGHT', start: '8:30',  end: '10:00' },
-    // Friday afters
-    { name: 'ADO',                         day: 1, after: true,  stage: 'ARAGON' },
-    { name: 'JAE STEPHENS',                day: 1, after: true,  stage: 'BEAT KITCHEN' },
-    { name: 'CAMERON WHITCOMB',            day: 1, after: true,  stage: 'BOTTOM LOUNGE' },
-    { name: 'DJ TRIXIE MATTEL',            day: 1, after: true,  stage: 'CERMAK HALL' },
-    { name: 'VILLANELLE',                  day: 1, after: true,  stage: 'COBRA LOUNGE' },
-    { name: 'BOOTS',                       day: 1, after: true,  stage: 'CONCORD' },
-    { name: 'KNOW GOOD',                   day: 1, after: true,  stage: 'CHOP SHOP' },
-    { name: 'CHEZILE',                     day: 1, after: true,  stage: "GARCIA'S" },
-    { name: 'CORTIS',                      day: 1, after: true,  stage: 'HOUSE OF BLUES' },
-    { name: 'BBN0$',                       day: 1, after: true,  stage: 'HOUSE OF BLUES' },
-    { name: 'MOMMA',                       day: 1, after: true,  stage: 'LINCOLN HALL' },
-    { name: 'SIX SEX',                     day: 1, after: true,  stage: 'OUTSET' },
-    { name: 'KHAMARI',                     day: 1, after: true,  stage: 'PARK WEST' },
-    { name: 'HORSEGIIRL',                  day: 1, after: true,  stage: 'RADIUS' },
-    { name: 'NOTION',                      day: 1, after: true,  stage: 'RAMOVA' },
-    { name: 'LOATHE',                      day: 1, after: true,  stage: 'REGGIES' },
-    { name: 'CLIPSE',                      day: 1, after: true,  stage: 'RIVIERA' },
-    { name: 'BEABADOOBEE',                 day: 1, after: true,  stage: 'SALT SHED' },
-    { name: 'PARTYOF2',                    day: 1, after: true,  stage: 'SCHUBAS' },
-    { name: 'LYNY',                        day: 1, after: true,  stage: 'SOUND-BAR' },
-    { name: 'LUCY BEDROQUE',               day: 1, after: true,  stage: 'SUBTERRANEAN' },
-    { name: 'HAUTE & FREDDY',              day: 1, after: true,  stage: 'THALIA HALL' },
-    { name: 'SPACEY JANE',                 day: 1, after: true,  stage: 'THE VIC' },
-    // Saturday afters
-    { name: 'DUKE DUMONT',                 day: 2, after: true,  stage: 'CERMAK HALL' },
-    { name: 'LOS RETROS',                  day: 2, after: true,  stage: 'COBRA LOUNGE' },
-    { name: 'ALISON WONDERLAND',           day: 2, after: true,  stage: 'CONCORD' },
-    { name: 'ADELA',                       day: 2, after: true,  stage: 'CHOP SHOP' },
-    { name: 'AFTER',                       day: 2, after: true,  stage: 'EMPTY BOTTLE' },
-    { name: 'FORST CHILDREN + NINAJIRACHI', day: 2, after: true, stage: 'EPIPHANY HALL' },
-    { name: 'NEW CONSTELLATIONS',          day: 2, after: true,  stage: "GARCIA'S" },
-    { name: 'THE STORY SO FAR',            day: 2, after: true,  stage: 'HOUSE OF BLUES' },
-    { name: 'INJI',                        day: 2, after: true,  stage: 'LINCOLN HALL' },
-    { name: 'HOT MULLIGAN',                day: 2, after: true,  stage: 'METRO' },
-    { name: 'MONALEO',                     day: 2, after: true,  stage: 'OUTSET' },
-    { name: 'KWN',                         day: 2, after: true,  stage: 'PARK WEST' },
-    { name: 'MAX STYLE',                   day: 2, after: true,  stage: 'RADIUS' },
-    { name: 'FREDDIE GIBBS',               day: 2, after: true,  stage: 'RAMOVA' },
-    { name: 'DESTIN CONRAD',               day: 2, after: true,  stage: 'REGGIES' },
-    { name: '5 SECONDS OF SUMMER',         day: 2, after: true,  stage: 'SALT SHED' },
-    { name: 'WHATMORE',                    day: 2, after: true,  stage: 'SCHUBAS' },
-    { name: 'WHETHAN',                     day: 2, after: true,  stage: 'SOUND-BAR' },
-    { name: 'VANDELUX',                    day: 2, after: true,  stage: 'SLEEPING VILLAGE' },
-    { name: 'FAKEMINK',                    day: 2, after: true,  stage: 'SUBTERRANEAN' },
-    { name: 'AMBER MARK',                  day: 2, after: true,  stage: 'THALIA HALL' },
-    { name: 'JADE',                        day: 2, after: true,  stage: 'THE VIC' },
-    // Sunday afters
-    { name: 'STELLA LEFTY',                day: 3, after: true,  stage: 'BEAT KITCHEN' },
-    { name: 'WATER FROM YOUR EYES',        day: 3, after: true,  stage: 'EMPTY BOTTLE' },
-    { name: 'ETHEN CAIN',                  day: 3, after: true,  stage: 'METRO' },
-    { name: 'WAYLON WYATT',                day: 3, after: true,  stage: 'SCHUBAS' },
+    // Friday regular
+    { name: 'PARTYOF2',                    day: 1, after: false, stage: 'T-MOBILE',  start: '12:55', end: '1:40' },
+    { name: 'I-DLE',                       day: 1, after: false, stage: 'T-MOBILE',  start: '2:40',  end: '3:40' },
+    { name: 'ZARA LARSSON',                day: 1, after: false, stage: 'T-MOBILE',  start: '4:40',  end: '5:40' },
+    { name: 'LIL UZI VERT',                day: 1, after: false, stage: 'T-MOBILE',  start: '6:40',  end: '7:40' },
+    { name: 'CHARLI XCX',                  day: 1, after: false, stage: 'T-MOBILE',  start: '8:40',  end: '8:40' },
+    { name: 'THE ARMY, THE NAVY',          day: 1, after: false, stage: 'ALLIANZ',   start: '12:10', end: '12:55' },
+    { name: 'CLAIRE ROSINKRANZ',           day: 1, after: false, stage: 'ALLIANZ',   start: '1:40',  end: '2:40' },
+    { name: 'SKYE NEWMAN',                 day: 1, after: false, stage: 'ALLIANZ',   start: '3:40',  end: '4:40' },
+    { name: 'SUKI WATERHOUSE',             day: 1, after: false, stage: 'ALLIANZ',   start: '5:40',  end: '6:40' },
+    { name: 'NOT FOR RADIO',               day: 1, after: false, stage: 'ALLIANZ',   start: '7:40',  end: '8:40' },
+    { name: 'BRADEAZY',                    day: 1, after: false, stage: "PERRY'S",   start: '12:00', end: '12:30' },
+    { name: 'AVELLO',                      day: 1, after: false, stage: "PERRY'S",   start: '12:45', end: '1:30' },
+    { name: 'LYNY',                        day: 1, after: false, stage: "PERRY'S",   start: '1:45',  end: '2:45' },
+    { name: 'RŌZ',                         day: 1, after: false, stage: "PERRY'S",   start: '3:00',  end: '4:00' },
+    { name: 'NOTION',                      day: 1, after: false, stage: "PERRY'S",   start: '4:15',  end: '5:15' },
+    { name: 'SIDEPIECE',                   day: 1, after: false, stage: "PERRY'S",   start: '5:45',  end: '6:45' },
+    { name: 'MUSTARD',                     day: 1, after: false, stage: "PERRY'S",   start: '7:00',  end: '8:00' },
+    { name: 'MAJOR LAZER',                 day: 1, after: false, stage: "PERRY'S",   start: '8:30',  end: '9:45' },
+    { name: 'WHITNEY WHITNEY',             day: 1, after: false, stage: 'BMI',       start: '12:00', end: '12:30' },
+    { name: 'VALENCIA GRACE',              day: 1, after: false, stage: 'BMI',       start: '1:00',  end: '1:40' },
+    { name: 'ELLA BOH',                    day: 1, after: false, stage: 'BMI',       start: '2:10',  end: '2:50' },
+    { name: 'EMI GRACE',                   day: 1, after: false, stage: 'BMI',       start: '3:20',  end: '4:00' },
+    { name: 'IVRI',                        day: 1, after: false, stage: 'BMI',       start: '4:30',  end: '5:10' },
+    { name: 'ELLA RED',                    day: 1, after: false, stage: 'BMI',       start: '5:40',  end: '6:20' },
+    { name: 'PALOMA MURPHY',               day: 1, after: false, stage: 'BMI',       start: '6:50',  end: '7:30' },
+    { name: 'BENO',                        day: 1, after: false, stage: 'AIRBNB',    start: '12:00', end: '12:30' },
+    { name: 'DAY WE RAN',                  day: 1, after: false, stage: 'AIRBNB',    start: '12:50', end: '1:30' },
+    { name: 'LOVE SPELLS',                 day: 1, after: false, stage: 'AIRBNB',    start: '1:50',  end: '2:30' },
+    { name: '54 ULTRA',                    day: 1, after: false, stage: 'AIRBNB',    start: '2:50',  end: '3:30' },
+    { name: 'FINN WOLFHARD',               day: 1, after: false, stage: 'AIRBNB',    start: '4:00',  end: '4:45' },
+    { name: 'OKLOU',                       day: 1, after: false, stage: 'AIRBNB',    start: '5:30',  end: '6:15' },
+    { name: 'SLAYYYTER',                   day: 1, after: false, stage: 'AIRBNB',    start: '6:45',  end: '7:30' },
+    { name: 'HORSEGIIRL',                  day: 1, after: false, stage: 'AIRBNB',    start: '8:00',  end: '8:45' },
+    { name: 'FREDDIE GIBBS',               day: 1, after: false, stage: 'AIRBNB',    start: '9:15',  end: '10:00' },
+    { name: 'CHICAGO MADE',                day: 1, after: false, stage: "TITO'S",    start: '12:15', end: '1:00' },
+    { name: 'JULIA WOLF',                  day: 1, after: false, stage: "TITO'S",    start: '1:45',  end: '2:30' },
+    { name: 'MOTHER MOTHER',               day: 1, after: false, stage: "TITO'S",    start: '3:30',  end: '4:30' },
+    { name: 'LOATHE',                      day: 1, after: false, stage: "TITO'S",    start: '5:30',  end: '6:30' },
+    { name: 'NETTSPEND',                   day: 1, after: false, stage: "TITO'S",    start: '7:30',  end: '8:30' },
+    { name: 'HIGH VIS',                    day: 1, after: false, stage: 'BUD LIGHT', start: '1:00',  end: '1:45' },
+    { name: 'BALU BRIGADA',                day: 1, after: false, stage: 'BUD LIGHT', start: '2:30',  end: '3:30' },
+    { name: 'THE STORY SO FAR',            day: 1, after: false, stage: 'BUD LIGHT', start: '4:30',  end: '5:30' },
+    { name: 'YUNGBLUD',                    day: 1, after: false, stage: 'BUD LIGHT', start: '6:30',  end: '7:30' },
+    { name: 'THE SMASHING PUMPKINS',       day: 1, after: false, stage: 'BUD LIGHT', start: '8:30',  end: '10:00' },
+    // Saturday regular
+    { name: 'LUCY BEDROQUE',               day: 2, after: false, stage: 'T-MOBILE',  start: '1:10',  end: '1:55' },
+    { name: 'CORTIS',                      day: 2, after: false, stage: 'T-MOBILE',  start: '2:55',  end: '3:45' },
+    { name: 'LEON THOMAS',                 day: 2, after: false, stage: 'T-MOBILE',  start: '4:30',  end: '5:30' },
+    { name: 'THE NEIGHBOURHOOD',           day: 2, after: false, stage: 'T-MOBILE',  start: '6:30',  end: '7:30' },
+    { name: 'OLIVIA DEAN',                 day: 2, after: false, stage: 'T-MOBILE',  start: '8:30' },
+    { name: 'SUNDAY (1994)',               day: 2, after: false, stage: 'ALLIANZ',   start: '12:25', end: '1:10' },
+    { name: 'JIM LEGXACY',                 day: 2, after: false, stage: 'ALLIANZ',   start: '1:55',  end: '2:55' },
+    { name: 'KHAMARI',                     day: 2, after: false, stage: 'ALLIANZ',   start: '3:45',  end: '4:30' },
+    { name: 'SPACEY JANE',                 day: 2, after: false, stage: 'ALLIANZ',   start: '5:30',  end: '6:30' },
+    { name: 'GEESE',                       day: 2, after: false, stage: 'ALLIANZ',   start: '7:30',  end: '8:30' },
+    { name: 'PEACE CONTROL',               day: 2, after: false, stage: "PERRY'S",   start: '12:00', end: '12:30' },
+    { name: 'MC4D',                        day: 2, after: false, stage: "PERRY'S",   start: '12:45', end: '1:30' },
+    { name: 'OMNOM',                       day: 2, after: false, stage: "PERRY'S",   start: '1:45',  end: '2:45' },
+    { name: 'AYYBO',                       day: 2, after: false, stage: "PERRY'S",   start: '3:00',  end: '4:00' },
+    { name: 'WHETHAN',                     day: 2, after: false, stage: "PERRY'S",   start: '4:15',  end: '5:15' },
+    { name: 'MAX STYLER',                   day: 2, after: false, stage: "PERRY'S",   start: '5:45',  end: '6:45' },
+    { name: 'ALISON WONDERLAND',           day: 2, after: false, stage: "PERRY'S",   start: '7:00',  end: '8:00' },
+    { name: 'DISCO LINES',                 day: 2, after: false, stage: "PERRY'S",   start: '8:30',  end: '9:45' },
+    { name: 'THE CREEKERS',                day: 2, after: false, stage: 'BMI',       start: '1:00',  end: '1:40' },
+    { name: 'NEXT OF KIN',                 day: 2, after: false, stage: 'BMI',       start: '2:10',  end: '2:50' },
+    { name: 'INK',                         day: 2, after: false, stage: 'BMI',       start: '3:20',  end: '4:00' },
+    { name: 'CALDER ALLEN',                day: 2, after: false, stage: 'BMI',       start: '4:30',  end: '5:10' },
+    { name: 'JAE STEPHENS',                day: 2, after: false, stage: 'BMI',       start: '5:40',  end: '6:20' },
+    { name: 'RYMAN',                       day: 2, after: false, stage: 'BMI',       start: '6:50',  end: '7:30' },
+    { name: 'NAT MYERS',                   day: 2, after: false, stage: 'AIRBNB',    start: '12:00', end: '12:30' },
+    { name: 'VILLANELLE',                  day: 2, after: false, stage: 'AIRBNB',    start: '12:50', end: '1:30' },
+    { name: 'DIE SPITZ',                   day: 2, after: false, stage: 'AIRBNB',    start: '1:50',  end: '2:30' },
+    { name: 'FROST CHILDREN',              day: 2, after: false, stage: 'AIRBNB',    start: '2:50',  end: '3:30' },
+    { name: 'QUADECA',                     day: 2, after: false, stage: 'AIRBNB',    start: '4:00',  end: '4:45' },
+    { name: 'SIENNA SPIRO',                day: 2, after: false, stage: 'AIRBNB',    start: '5:15',  end: '6:00' },
+    { name: 'KWN',                         day: 2, after: false, stage: 'AIRBNB',    start: '6:30',  end: '7:15' },
+    { name: 'CAMERON WHITCOMB',            day: 2, after: false, stage: 'AIRBNB',    start: '7:45',  end: '8:30' },
+    { name: 'DJ TRIXIE MATTEL',            day: 2, after: false, stage: 'AIRBNB',    start: '9:00',  end: '10:00' },
+    { name: 'CHEZILE',                     day: 2, after: false, stage: "TITO'S",    start: '12:45', end: '1:30' },
+    { name: 'GOLDIE BOUTILIER',            day: 2, after: false, stage: "TITO'S",    start: '2:15',  end: '3:15' },
+    { name: 'MOMMA',                       day: 2, after: false, stage: "TITO'S",    start: '4:15',  end: '5:15' },
+    { name: 'BBNO$',                       day: 2, after: false, stage: "TITO'S",    start: '6:15',  end: '7:15' },
+    { name: 'CHICAGO YOUTH SYMPHONY',      day: 2, after: false, stage: "TITO'S",    start: '8:15',  end: '9:00' },
+    { name: 'CHACE',                       day: 2, after: false, stage: 'BUD LIGHT', start: '1:30',  end: '2:15' },
+    { name: 'WOLF ALICE',                  day: 2, after: false, stage: 'BUD LIGHT', start: '3:15',  end: '4:15' },
+    { name: 'CLIPSE',                      day: 2, after: false, stage: 'BUD LIGHT', start: '5:15',  end: '6:15' },
+    { name: 'ETHEL CAIN',                  day: 2, after: false, stage: 'BUD LIGHT', start: '7:15',  end: '8:15' },
+    { name: 'JENNIE',                      day: 2, after: false, stage: 'BUD LIGHT', start: '9:00',  end: '10:00' },
+    // Sunday regular
+    { name: 'NEW CONSTELLATIONS',          day: 3, after: false, stage: 'T-MOBILE',  start: '1:15',  end: '2:00' },
+    { name: 'ADÉLA',                       day: 3, after: false, stage: 'T-MOBILE',  start: '3:00',  end: '3:45' },
+    { name: 'MUNA',                        day: 3, after: false, stage: 'T-MOBILE',  start: '4:45',  end: '5:45' },
+    { name: 'BEABADOOBEE',                 day: 3, after: false, stage: 'T-MOBILE',  start: '6:45',  end: '7:45' },
+    { name: 'TATE MCRAE',                  day: 3, after: false, stage: 'T-MOBILE',  start: '8:45' },
+    { name: 'STELLA LEFTY',                day: 3, after: false, stage: 'ALLIANZ',   start: '12:30', end: '1:15' },
+    { name: 'DESTIN CONRAD',               day: 3, after: false, stage: 'ALLIANZ',   start: '2:00',  end: '3:00' },
+    { name: 'AMBER MARK',                  day: 3, after: false, stage: 'ALLIANZ',   start: '3:45',  end: '4:45' },
+    { name: 'JADE',                        day: 3, after: false, stage: 'ALLIANZ',   start: '5:45',  end: '6:45' },
+    { name: 'AESPA',                       day: 3, after: false, stage: 'ALLIANZ',   start: '7:45',  end: '8:45' },
+    { name: 'ZACK MARTINO',                day: 3, after: false, stage: "PERRY'S",   start: '12:00', end: '12:30' },
+    { name: 'JACKIE HOLLANDER',            day: 3, after: false, stage: "PERRY'S",   start: '12:45', end: '1:30' },
+    { name: 'WESTEND',                     day: 3, after: false, stage: "PERRY'S",   start: '1:45',  end: '2:45' },
+    { name: 'RIORDAN',                     day: 3, after: false, stage: "PERRY'S",   start: '3:00',  end: '4:00' },
+    { name: 'DOMBRESKY',                   day: 3, after: false, stage: "PERRY'S",   start: '4:15',  end: '5:15' },
+    { name: 'DUKE DUMONT',                 day: 3, after: false, stage: "PERRY'S",   start: '5:45',  end: '6:45' },
+    { name: 'ELI BROWN',                   day: 3, after: false, stage: "PERRY'S",   start: '7:00',  end: '8:00' },
+    { name: 'THE CHAINSMOKERS',            day: 3, after: false, stage: "PERRY'S",   start: '8:30',  end: '9:45' },
+    { name: 'SNACKTIME',                   day: 3, after: false, stage: 'BMI',       start: '1:00',  end: '1:40' },
+    { name: 'SURFING FOR DAISY',           day: 3, after: false, stage: 'BMI',       start: '2:10',  end: '2:50' },
+    { name: 'CASE OATS',                   day: 3, after: false, stage: 'BMI',       start: '3:20',  end: '4:00' },
+    { name: 'JUSTINE SKYE',                day: 3, after: false, stage: 'BMI',       start: '4:30',  end: '5:10' },
+    { name: 'PORCH LIGHT',                 day: 3, after: false, stage: 'BMI',       start: '5:40',  end: '6:20' },
+    { name: 'WILL SWINTON',                day: 3, after: false, stage: 'BMI',       start: '6:50',  end: '7:30' },
+    { name: 'SUNSHINE',                    day: 3, after: false, stage: 'AIRBNB',    start: '12:00', end: '12:30' },
+    { name: 'THE BENDS',                   day: 3, after: false, stage: 'AIRBNB',    start: '12:50', end: '1:30' },
+    { name: 'AFTER',                       day: 3, after: false, stage: 'AIRBNB',    start: '1:50',  end: '2:30' },
+    { name: 'WATER FROM YOUR EYES',        day: 3, after: false, stage: 'AIRBNB',    start: '2:50',  end: '3:30' },
+    { name: 'INJI',                        day: 3, after: false, stage: 'AIRBNB',    start: '4:00',  end: '4:45' },
+    { name: 'LOS RETROS',                  day: 3, after: false, stage: 'AIRBNB',    start: '5:15',  end: '6:00' },
+    { name: 'MONALEO',                     day: 3, after: false, stage: 'AIRBNB',    start: '6:30',  end: '7:15' },
+    { name: 'FAKEMINK',                    day: 3, after: false, stage: 'AIRBNB',    start: '7:45',  end: '8:30' },
+    { name: 'ADO',                         day: 3, after: false, stage: 'AIRBNB',    start: '9:15',  end: '10:00' },
+    { name: 'EASY HONEY',                  day: 3, after: false, stage: "TITO'S",    start: '12:45', end: '1:30' },
+    { name: 'CRUZ BECKHAM',                day: 3, after: false, stage: "TITO'S",    start: '2:15',  end: '3:00' },
+    { name: 'WUNDERHORSE',                 day: 3, after: false, stage: "TITO'S",    start: '4:00',  end: '5:00' },
+    { name: 'HOT MULLIGAN',                day: 3, after: false, stage: "TITO'S",    start: '6:00',  end: '7:00' },
+    { name: 'VANDELUX',                    day: 3, after: false, stage: "TITO'S",    start: '8:00',  end: '8:45' },
+    { name: 'WHATMORE',                    day: 3, after: false, stage: 'BUD LIGHT', start: '1:30',  end: '2:15' },
+    { name: 'WAYLON WYATT',                day: 3, after: false, stage: 'BUD LIGHT', start: '3:00',  end: '4:00' },
+    { name: 'YOASOBI',                     day: 3, after: false, stage: 'BUD LIGHT', start: '5:00',  end: '6:00' },
+    { name: 'TURNSTILE',                   day: 3, after: false, stage: 'BUD LIGHT', start: '7:00',  end: '8:00' },
+    { name: 'THE XX',                      day: 3, after: false, stage: 'BUD LIGHT', start: '8:45',  end: '10:00' },
   ];
 
   const STORAGE_KEY = 'lolla-acts';
@@ -727,6 +856,25 @@
     const dropdown = document.getElementById('act-name-dropdown');
     dropdown.innerHTML = matches.map(entry => `<div class="combobox-option">${entry.name}</div>`).join('');
     dropdown.classList.toggle('open', matches.length > 0);
+  }
+
+  function updateStageDropdown(filterText) {
+    const isAfter = document.getElementById('add-after-check').checked;
+    let options;
+    if (isAfter) {
+      const selectedDay = parseInt(document.getElementById('add-day-select').value);
+      const venues = [...new Set(
+        ACTS_MASTER_LIST
+          .filter(entry => entry.day === selectedDay && entry.after === true)
+          .map(entry => entry.stage)
+      )].sort();
+      options = filterText ? venues.filter(v => v.toLowerCase().includes(filterText.toLowerCase())) : venues;
+    } else {
+      options = filterText ? MAIN_STAGES.filter(s => s.toLowerCase().includes(filterText.toLowerCase())) : MAIN_STAGES;
+    }
+    const dropdown = document.getElementById('stage-dropdown');
+    dropdown.innerHTML = options.map(s => `<div class="combobox-option">${s}</div>`).join('');
+    dropdown.classList.toggle('open', options.length > 0);
   }
 
   // ─────────────────────────────────────────────
@@ -1087,8 +1235,7 @@
   });
 
   document.getElementById('add-after-check').addEventListener('change', function () {
-    document.getElementById('add-stage-select').style.display = this.checked ? 'none' : '';
-    document.getElementById('add-stage-text').style.display   = this.checked ? ''     : 'none';
+    document.getElementById('add-stage-input').value = '';
     const startInput = document.getElementById('add-start');
     const endInput   = document.getElementById('add-end');
     startInput.value         = '';
@@ -1111,13 +1258,30 @@
       entry => entry.name === this.value && entry.day === selectedDay && entry.after === isAfter
     );
     if (!match) { return; }
-    if (isAfter) {
-      document.getElementById('add-stage-text').value = match.stage;
-    } else {
-      document.getElementById('add-stage-select').value = match.stage;
-    }
+    document.getElementById('add-stage-input').value = match.stage;
     document.getElementById('add-start').value = match.start || '';
     document.getElementById('add-end').value   = match.end   || '';
+  });
+
+  document.getElementById('add-stage-input').addEventListener('focus', function () {
+    updateStageDropdown('');
+  });
+
+  document.getElementById('add-stage-input').addEventListener('input', function () {
+    updateStageDropdown(this.value);
+  });
+
+  document.getElementById('add-stage-input').addEventListener('blur', function () {
+    setTimeout(() => {
+      document.getElementById('stage-dropdown').classList.remove('open');
+    }, 150);
+  });
+
+  document.getElementById('stage-dropdown').addEventListener('click', function (event) {
+    const option = event.target.closest('.combobox-option');
+    if (!option) { return; }
+    document.getElementById('add-stage-input').value = option.textContent;
+    this.classList.remove('open');
   });
 
   document.getElementById('add-act-name').addEventListener('blur', function () {
@@ -1140,9 +1304,7 @@
     const day   = parseInt(form.querySelector('[name=day]').value);
     const after = document.getElementById('add-after-check').checked;
     const name  = form.querySelector('[name=name]').value.trim();
-    const stage = after
-      ? document.getElementById('add-stage-text').value.trim()
-      : document.getElementById('add-stage-select').value.trim();
+    const stage = document.getElementById('add-stage-input').value.trim();
     const start = document.getElementById('add-start').value.trim() || undefined;
     const end   = document.getElementById('add-end').value.trim()   || undefined;
     if (!name || !stage) { return; }
@@ -1155,7 +1317,7 @@
     form.querySelector('[name=name]').value  = '';
     form.querySelector('[name=start]').value = '';
     form.querySelector('[name=end]').value   = '';
-    document.getElementById('add-stage-text').value = '';
+    document.getElementById('add-stage-input').value = '';
   });
 
   document.getElementById('reset-btn').addEventListener('click', () => {
