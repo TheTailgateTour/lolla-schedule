@@ -21,6 +21,7 @@
     .logo-header {
       text-align: center;
       margin-bottom: 16px;
+      max-width: 100vw;
     }
 
     .logo-header img {
@@ -62,7 +63,7 @@
     /* ── Bordered grid (header + body columns only) ── */
     .schedule-grid {
       flex: 0 0 auto;
-      border: 2px solid #2194ad;
+      border: 1px solid #2194ad;
       border-left-color: #ebade6;
       border-bottom-color: #ebade6;
       overflow: hidden;
@@ -77,10 +78,6 @@
       display: grid;
       grid-template-columns: repeat(10, 140px);
     }
-    .schedule-header {
-      border-bottom: 2px solid #2194ad;
-    }
-
     /* ── Header ── */
     .day-header {
       grid-column: span 2;
@@ -92,6 +89,7 @@
       text-align: center;
       padding: 10px 6px;
       border-left: 1px solid #2194ad;
+      border-bottom: 1px solid #2194ad;
     }
 
     /* ── Body columns ── */
@@ -117,7 +115,7 @@
       display: none;
     }
 
-    .schedule-header .day-header:first-child { border-left: 2px solid #2194ad; }
+    .schedule-header .day-header:first-child { border-left: 1px solid #2194ad; }
     body.wed-hidden .schedule-header .day-header:nth-child(2) { border-left: none; }
 
     .stage-column {
@@ -339,6 +337,37 @@
 
     .btn-reset:hover { background-color: #d98fd3; }
 
+    .combobox-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .combobox-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 200;
+      background: #fff;
+      border: 1px solid #2194ad;
+      min-width: 180px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .combobox-dropdown.open { display: block; }
+
+    .combobox-option {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 5px 8px;
+      cursor: pointer;
+      color: #000;
+    }
+
+    .combobox-option:hover { background-color: #32c6e0; }
+
     #add-form {
       display: flex;
       flex-wrap: wrap;
@@ -360,7 +389,7 @@
       color: #000;
     }
 
-    #add-form input[name="name"]  { width: 180px; }
+    #add-act-name { width: 180px; }
     #add-form input[name="stage"] { width: 120px; }
     #add-form input[name="start"],
     #add-form input[name="end"]   { width: 80px; }
@@ -472,7 +501,10 @@
     <label style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:14px; display:flex; align-items:center; gap:4px; cursor:pointer;">
       <input type="checkbox" id="add-after-check"> After
     </label>
-    <input name="name"  type="text" placeholder="Act name" autocomplete="off">
+    <div class="combobox-wrapper">
+      <input name="name" type="text" placeholder="Act name" autocomplete="off" id="add-act-name">
+      <div id="act-name-dropdown" class="combobox-dropdown"></div>
+    </div>
     <select name="stage" id="add-stage-select">
       <option value="T-MOBILE">T-MOBILE</option>
       <option value="ALLIANZ">ALLIANZ (LAKESHORE)</option>
@@ -528,6 +560,142 @@
   //  actTextColor:   text color in act block       (default black)
   //  stageTextColor: text color in stage block     (default white)
   // ─────────────────────────────────────────────
+  const ACTS_MASTER_LIST = [
+    // { name, day (0=Thu,1=Fri,2=Sat,3=Sun,5=Wed), after, stage }
+    // Wednesday afters
+    { name: 'EVENING ELEPHANTS',           day: 5, after: true,  stage: 'BEAT KITCHEN' },
+    { name: 'CMAT',                        day: 5, after: true,  stage: 'BOTTOM LOUNGE' },
+    { name: 'AYYBO',                       day: 5, after: true,  stage: 'CASTAWAYS' },
+    { name: 'BAD NERVES',                  day: 5, after: true,  stage: 'COBRA LOUNGE' },
+    { name: 'BELLA KAY',                   day: 5, after: true,  stage: "GARCIA'S" },
+    { name: 'BLOOD ORANGE',                day: 5, after: true,  stage: 'HOUSE OF BLUES' },
+    { name: 'BIXBY',                       day: 5, after: true,  stage: 'LINCOLN HALL' },
+    { name: 'VIAGRA BOYS',                 day: 5, after: true,  stage: 'METRO' },
+    { name: 'BETWEEN FRIENDS',             day: 5, after: true,  stage: 'OUTSET' },
+    { name: 'BORIS BREJCHA',               day: 5, after: true,  stage: 'RADIUS' },
+    { name: 'EMPIRE OF THE SUN',           day: 5, after: true,  stage: 'SALT SHED' },
+    { name: 'MARLON FUNAKI',               day: 5, after: true,  stage: 'SCHUBAS' },
+    { name: 'PEARLY DROPS',                day: 5, after: true,  stage: 'SLEEPING VILLAGE' },
+    { name: 'SNOW STRIPPERS',              day: 5, after: true,  stage: 'SUBTERRANEAN' },
+    { name: 'AUDREY HOBERT',               day: 5, after: true,  stage: 'THALIA HALL' },
+    { name: 'WET LEG',                     day: 5, after: true,  stage: 'VIC THEATER' },
+    // Thursday afters
+    { name: 'KETTAMA',                     day: 0, after: true,  stage: 'ARAGON' },
+    { name: 'BALU BRIGADA',                day: 0, after: true,  stage: 'BOTTOM LOUNGE' },
+    { name: 'BOOST+++',                    day: 0, after: true,  stage: 'CERMAK HALL' },
+    { name: 'HIGH VIS',                    day: 0, after: true,  stage: 'COBRA LOUNGE' },
+    { name: 'ECCA VANDAL',                 day: 0, after: true,  stage: 'EMPTY BOTTLE' },
+    { name: 'THE ARMY, THE NAVY',          day: 0, after: true,  stage: "GARCIA'S" },
+    { name: 'SUKI WATERHOUSE',             day: 0, after: true,  stage: 'HOUSE OF BLUES' },
+    { name: 'KINGFISHR',                   day: 0, after: true,  stage: 'LINCOLN HALL' },
+    { name: 'NOT FOR RADIO',               day: 0, after: true,  stage: 'METRO' },
+    { name: 'GOLDIE BOUTILIER',            day: 0, after: true,  stage: 'OUTSET' },
+    { name: 'MOTHER MOTHER',               day: 0, after: true,  stage: 'PARK WEST' },
+    { name: 'WORSHIP',                     day: 0, after: true,  stage: 'RAMOVA' },
+    { name: 'JULIA WOLF',                  day: 0, after: true,  stage: 'REGGIES' },
+    { name: 'YUNGBLUD',                    day: 0, after: true,  stage: 'RIVIERA' },
+    { name: '54 ULTRA',                    day: 0, after: true,  stage: 'SCHUBAS' },
+    { name: 'MAJOR LAZER',                 day: 0, after: true,  stage: 'SOUND-BAR' },
+    { name: 'PENELOPE ROAD',               day: 0, after: true,  stage: 'SLEEPING VILLAGE' },
+    { name: 'FINN WOLFHARD',               day: 0, after: true,  stage: 'SUBTERRANEAN' },
+    { name: 'ZARA LARSSON',                day: 0, after: true,  stage: 'THE VIC' },
+    // Thursday regular
+    { name: 'ASHA BANKS',                  day: 0, after: false, stage: 'T-MOBILE' },
+    { name: 'HAUTE & FREDDY',              day: 0, after: false, stage: 'T-MOBILE' },
+    { name: '5 SECONDS OF SUMMER',         day: 0, after: false, stage: 'T-MOBILE' },
+    { name: 'SOMBR',                       day: 0, after: false, stage: 'T-MOBILE' },
+    { name: 'LORDE',                       day: 0, after: false, stage: 'T-MOBILE' },
+    { name: 'PEARLY DROPS',                day: 0, after: false, stage: 'ALLIANZ' },
+    { name: 'BAD NERVES',                  day: 0, after: false, stage: 'ALLIANZ' },
+    { name: 'SB19',                        day: 0, after: false, stage: 'ALLIANZ' },
+    { name: 'AUDREY HOBERT',               day: 0, after: false, stage: 'ALLIANZ' },
+    { name: 'WET LEG',                     day: 0, after: false, stage: 'ALLIANZ' },
+    { name: 'KLO',                         day: 0, after: false, stage: "PERRY'S" },
+    { name: 'KNOW GOOD',                   day: 0, after: false, stage: "PERRY'S" },
+    { name: 'DEVAULT',                     day: 0, after: false, stage: "PERRY'S" },
+    { name: 'MPH',                         day: 0, after: false, stage: "PERRY'S" },
+    { name: 'BOYS NOIZE',                  day: 0, after: false, stage: "PERRY'S" },
+    { name: 'BORIS BREJCHA',               day: 0, after: false, stage: "PERRY'S" },
+    { name: 'KETTAMA',                     day: 0, after: false, stage: "PERRY'S" },
+    { name: 'WORSHIP',                     day: 0, after: false, stage: "PERRY'S" },
+    { name: 'THE BRAYMORES',               day: 0, after: false, stage: 'BMI' },
+    { name: 'SIMON GROSSMANN',             day: 0, after: false, stage: 'BMI' },
+    { name: 'ELIZABETH NICHOLS',           day: 0, after: false, stage: 'BMI' },
+    { name: 'BELLA KAY',                   day: 0, after: false, stage: 'BMI' },
+    { name: 'CHALK',                       day: 0, after: false, stage: 'BMI' },
+    { name: 'EVENING ELEPHANTS',           day: 0, after: false, stage: 'BMI' },
+    { name: 'KIM THEORY',                  day: 0, after: false, stage: 'AIRBNB' },
+    { name: 'PENELOPE ROAD',               day: 0, after: false, stage: 'AIRBNB' },
+    { name: 'MARLON FUNAKI',               day: 0, after: false, stage: 'AIRBNB' },
+    { name: 'ECCA VANDAL',                 day: 0, after: false, stage: 'AIRBNB' },
+    { name: 'NINAJIRACHI',                 day: 0, after: false, stage: 'AIRBNB' },
+    { name: 'AMBLE',                       day: 0, after: false, stage: 'AIRBNB' },
+    { name: 'CMAT',                        day: 0, after: false, stage: 'AIRBNB' },
+    { name: 'SNOW STRIPPERS',              day: 0, after: false, stage: 'AIRBNB' },
+    { name: 'VIAGRA BOYS',                 day: 0, after: false, stage: 'AIRBNB' },
+    { name: 'FAOUZIA',                     day: 0, after: false, stage: "TITO'S" },
+    { name: 'KINGFISHR',                   day: 0, after: false, stage: "TITO'S" },
+    { name: 'PARIS PALOMA',                day: 0, after: false, stage: "TITO'S" },
+    { name: 'LITTLE SIMZ',                 day: 0, after: false, stage: "TITO'S" },
+    { name: 'BIXBY',                       day: 0, after: false, stage: 'BUD LIGHT' },
+    { name: 'BETWEEN FRIENDS',             day: 0, after: false, stage: 'BUD LIGHT' },
+    { name: 'BLOOD ORANGE',                day: 0, after: false, stage: 'BUD LIGHT' },
+    { name: 'EMPIRE OF THE SUN',           day: 0, after: false, stage: 'BUD LIGHT' },
+    { name: 'JOHN SUMMIT',                 day: 0, after: false, stage: 'BUD LIGHT' },
+    // Friday afters
+    { name: 'ADO',                         day: 1, after: true,  stage: 'ARAGON' },
+    { name: 'JAE STEPHENS',                day: 1, after: true,  stage: 'BEAT KITCHEN' },
+    { name: 'CAMERON WHITCOMB',            day: 1, after: true,  stage: 'BOTTOM LOUNGE' },
+    { name: 'DJ TRIXIE MATTEL',            day: 1, after: true,  stage: 'CERMAK HALL' },
+    { name: 'VILLANELLE',                  day: 1, after: true,  stage: 'COBRA LOUNGE' },
+    { name: 'BOOTS',                       day: 1, after: true,  stage: 'CONCORD' },
+    { name: 'KNOW GOOD',                   day: 1, after: true,  stage: 'CHOP SHOP' },
+    { name: 'CHEZILE',                     day: 1, after: true,  stage: "GARCIA'S" },
+    { name: 'CORTIS',                      day: 1, after: true,  stage: 'HOUSE OF BLUES' },
+    { name: 'BBN0$',                       day: 1, after: true,  stage: 'HOUSE OF BLUES' },
+    { name: 'MOMMA',                       day: 1, after: true,  stage: 'LINCOLN HALL' },
+    { name: 'SIX SEX',                     day: 1, after: true,  stage: 'OUTSET' },
+    { name: 'KHAMARI',                     day: 1, after: true,  stage: 'PARK WEST' },
+    { name: 'HORSEGIIRL',                  day: 1, after: true,  stage: 'RADIUS' },
+    { name: 'NOTION',                      day: 1, after: true,  stage: 'RAMOVA' },
+    { name: 'LOATHE',                      day: 1, after: true,  stage: 'REGGIES' },
+    { name: 'CLIPSE',                      day: 1, after: true,  stage: 'RIVIERA' },
+    { name: 'BEABADOOBEE',                 day: 1, after: true,  stage: 'SALT SHED' },
+    { name: 'PARTYOF2',                    day: 1, after: true,  stage: 'SCHUBAS' },
+    { name: 'LYNY',                        day: 1, after: true,  stage: 'SOUND-BAR' },
+    { name: 'LUCY BEDROQUE',               day: 1, after: true,  stage: 'SUBTERRANEAN' },
+    { name: 'HAUTE & FREDDY',              day: 1, after: true,  stage: 'THALIA HALL' },
+    { name: 'SPACEY JANE',                 day: 1, after: true,  stage: 'THE VIC' },
+    // Saturday afters
+    { name: 'DUKE DUMONT',                 day: 2, after: true,  stage: 'CERMAK HALL' },
+    { name: 'LOS RETROS',                  day: 2, after: true,  stage: 'COBRA LOUNGE' },
+    { name: 'ALISON WONDERLAND',           day: 2, after: true,  stage: 'CONCORD' },
+    { name: 'ADELA',                       day: 2, after: true,  stage: 'CHOP SHOP' },
+    { name: 'AFTER',                       day: 2, after: true,  stage: 'EMPTY BOTTLE' },
+    { name: 'FORST CHILDREN + NINAJIRACHI', day: 2, after: true, stage: 'EPIPHANY HALL' },
+    { name: 'NEW CONSTELLATIONS',          day: 2, after: true,  stage: "GARCIA'S" },
+    { name: 'THE STORY SO FAR',            day: 2, after: true,  stage: 'HOUSE OF BLUES' },
+    { name: 'INJI',                        day: 2, after: true,  stage: 'LINCOLN HALL' },
+    { name: 'HOT MULLIGAN',                day: 2, after: true,  stage: 'METRO' },
+    { name: 'MONALEO',                     day: 2, after: true,  stage: 'OUTSET' },
+    { name: 'KWN',                         day: 2, after: true,  stage: 'PARK WEST' },
+    { name: 'MAX STYLE',                   day: 2, after: true,  stage: 'RADIUS' },
+    { name: 'FREDDIE GIBBS',               day: 2, after: true,  stage: 'RAMOVA' },
+    { name: 'DESTIN CONRAD',               day: 2, after: true,  stage: 'REGGIES' },
+    { name: '5 SECONDS OF SUMMER',         day: 2, after: true,  stage: 'SALT SHED' },
+    { name: 'WHATMORE',                    day: 2, after: true,  stage: 'SCHUBAS' },
+    { name: 'WHETHAN',                     day: 2, after: true,  stage: 'SOUND-BAR' },
+    { name: 'VANDELUX',                    day: 2, after: true,  stage: 'SLEEPING VILLAGE' },
+    { name: 'FAKEMINK',                    day: 2, after: true,  stage: 'SUBTERRANEAN' },
+    { name: 'AMBER MARK',                  day: 2, after: true,  stage: 'THALIA HALL' },
+    { name: 'JADE',                        day: 2, after: true,  stage: 'THE VIC' },
+    // Sunday afters
+    { name: 'STELLA LEFTY',                day: 3, after: true,  stage: 'BEAT KITCHEN' },
+    { name: 'WATER FROM YOUR EYES',        day: 3, after: true,  stage: 'EMPTY BOTTLE' },
+    { name: 'ETHEN CAIN',                  day: 3, after: true,  stage: 'METRO' },
+    { name: 'WAYLON WYATT',                day: 3, after: true,  stage: 'SCHUBAS' },
+  ];
+
   const STORAGE_KEY = 'lolla-acts';
 
   const DEFAULT_ACTS = [];
@@ -542,6 +710,21 @@
   }
 
   let acts = loadActs();
+
+  function updateActNameDropdown(filterText) {
+    const selectedDay = parseInt(document.getElementById('add-day-select').value);
+    const isAfter = document.getElementById('add-after-check').checked;
+    const matches = ACTS_MASTER_LIST
+      .filter(entry => {
+        if (entry.day !== selectedDay || entry.after !== isAfter) { return false; }
+        if (!filterText) { return true; }
+        return entry.name.toLowerCase().includes(filterText.toLowerCase());
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+    const dropdown = document.getElementById('act-name-dropdown');
+    dropdown.innerHTML = matches.map(entry => `<div class="combobox-option">${entry.name}</div>`).join('');
+    dropdown.classList.toggle('open', matches.length > 0);
+  }
 
   // ─────────────────────────────────────────────
   //  Helpers
@@ -677,15 +860,15 @@
         const nextDay      = dayOrder[dayIdx + 1];
         const nextIsFilled = nextDay !== undefined && filledDays.includes(nextDay);
 
-        cell.style.borderTop    = '2px solid #2194ad';
-        cell.style.borderBottom = '2px solid #2194ad';
-        cell.style.borderLeft   = isFirst ? '2px solid #2194ad' : '1px solid #2194ad';
+        cell.style.borderTop    = '1px solid #2194ad';
+        cell.style.borderBottom = '1px solid #2194ad';
+        cell.style.borderLeft   = '1px solid #2194ad';
 
         actCol.style.backgroundColor  = '';
         actCol.style.borderRightColor = '';
         stageCol.style.backgroundColor = '';
 
-        if (isLast)             { stageCol.style.borderRight = '2px solid #2194ad'; }
+        if (isLast)             { stageCol.style.borderRight = '1px solid #2194ad'; }
         else if (!nextIsFilled) { stageCol.style.borderRight = '1px solid #2194ad'; }
         else                    { stageCol.style.borderRight = ''; }
       }
@@ -769,9 +952,17 @@
     const tbody = document.getElementById('acts-tbody');
     tbody.innerHTML = '';
 
+    const dayOrderMap = { 5: 0, 0: 1, 1: 2, 2: 3, 3: 4 };
     const sorted = acts
       .map((act, originalIndex) => ({ act, originalIndex }))
-      .sort((a, b) => a.act.day - b.act.day || parseTimeToMinutes(a.act.start || '12:00') - parseTimeToMinutes(b.act.start || '12:00'));
+      .sort((a, b) => {
+        const dayDiff = (dayOrderMap[a.act.day] ?? 99) - (dayOrderMap[b.act.day] ?? 99);
+        if (dayDiff !== 0) return dayDiff;
+        if (a.act.after !== b.act.after) return a.act.after ? 1 : -1;
+        const minutesA = a.act.after ? Infinity : parseTimeToMinutes(a.act.start || '0:00');
+        const minutesB = b.act.after ? Infinity : parseTimeToMinutes(b.act.start || '0:00');
+        return minutesA - minutesB;
+      });
 
     sorted.forEach(({ act, originalIndex }) => {
       const row = document.createElement('tr');
@@ -903,6 +1094,40 @@
     endInput.disabled        = this.checked;
     startInput.style.opacity = this.checked ? '0.4' : '';
     endInput.style.opacity   = this.checked ? '0.4' : '';
+  });
+
+  document.getElementById('add-act-name').addEventListener('focus', function () {
+    updateActNameDropdown('');
+  });
+
+  document.getElementById('add-act-name').addEventListener('input', function () {
+    updateActNameDropdown(this.value);
+    const selectedDay = parseInt(document.getElementById('add-day-select').value);
+    const isAfter = document.getElementById('add-after-check').checked;
+    const match = ACTS_MASTER_LIST.find(
+      entry => entry.name === this.value && entry.day === selectedDay && entry.after === isAfter
+    );
+    if (!match) { return; }
+    if (isAfter) {
+      document.getElementById('add-stage-text').value = match.stage;
+    } else {
+      document.getElementById('add-stage-select').value = match.stage;
+    }
+  });
+
+  document.getElementById('add-act-name').addEventListener('blur', function () {
+    setTimeout(() => {
+      document.getElementById('act-name-dropdown').classList.remove('open');
+    }, 150);
+  });
+
+  document.getElementById('act-name-dropdown').addEventListener('click', function (event) {
+    const option = event.target.closest('.combobox-option');
+    if (!option) { return; }
+    const nameInput = document.getElementById('add-act-name');
+    nameInput.value = option.textContent;
+    nameInput.dispatchEvent(new Event('input'));
+    this.classList.remove('open');
   });
 
   document.getElementById('form-submit-btn').addEventListener('click', () => {
