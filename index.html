@@ -30,7 +30,7 @@
     }
 
     .schedule-wrapper {
-      max-width: 1176px;
+      width: fit-content;
       margin: 0 auto;
       display: flex;
       align-items: flex-start;
@@ -50,7 +50,7 @@
 
     .time-label {
       position: absolute;
-      right: 7px;
+      left: 7px;
       color: #000000;
       font-size: 10px;
       font-weight: 700;
@@ -61,15 +61,24 @@
 
     /* ── Bordered grid (header + body columns only) ── */
     .schedule-grid {
-      flex: 1;
+      flex: 0 0 auto;
       border: 2px solid #2194ad;
+      border-left-color: #ebade6;
+      border-bottom-color: #ebade6;
       overflow: hidden;
+    }
+    body.wed-hidden .schedule-grid {
+      border-left-color: #2194ad;
+      border-bottom-color: #2194ad;
     }
 
     .schedule-header,
     .schedule-body {
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
+      grid-template-columns: repeat(10, 140px);
+    }
+    .schedule-header {
+      border-bottom: 2px solid #2194ad;
     }
 
     /* ── Header ── */
@@ -85,10 +94,6 @@
       border-left: 1px solid #2194ad;
     }
 
-    .day-header:first-child {
-      border-left: none;
-    }
-
     /* ── Body columns ── */
     .act-column {
       position: relative;
@@ -97,15 +102,68 @@
       border-left: 1px solid #2194ad;
     }
 
-    .act-column:first-child {
-      border-left: none;
+    .act-column:first-child { border-left: none; }
+    body.wed-hidden #day-0-acts { border-left: none; }
+
+    #day-5-acts,
+    #day-5-stages {
+      background-color: #ebade6;
     }
+    #day-5-stages {
+      border-left-color: #ebade6;
+    }
+    #day-5-acts .hour-line,
+    #day-5-stages .hour-line {
+      display: none;
+    }
+
+    .schedule-header .day-header:first-child { border-left: 2px solid #2194ad; }
+    body.wed-hidden .schedule-header .day-header:nth-child(2) { border-left: none; }
 
     .stage-column {
       position: relative;
       height: 900px;
       background-color: #32c6e0;
       border-left: 1px solid #2194ad;
+    }
+
+    /* ── After row (standalone below grid) ── */
+    .after-row-grid {
+      flex: 0 0 auto;
+      display: grid;
+      grid-template-columns: repeat(10, 140px);
+      overflow: hidden;
+    }
+
+    .after-cell {
+      grid-column: span 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-left: 1px solid #2194ad;
+      min-height: 25px;
+    }
+
+    .after-cell-act,
+    .after-cell-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 6px;
+      gap: 2px;
+    }
+
+    .after-cell-act   { background-color: #a2daeb; border-right: 1px solid #2194ad; }
+    .after-cell-stage { background-color: #50ab9a; }
+
+    .after-cell-item {
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.1;
     }
 
     .hour-line {
@@ -115,6 +173,20 @@
       height: 1px;
       background-color: #2194ad;
       pointer-events: none;
+    }
+
+    /* ── Wednesday column visibility ── */
+    body.wed-hidden .schedule-header,
+    body.wed-hidden .schedule-body,
+    body.wed-hidden .after-row-grid {
+      grid-template-columns: repeat(8, 140px);
+    }
+
+    body.wed-hidden #day-5-acts,
+    body.wed-hidden #day-5-stages,
+    body.wed-hidden .schedule-header .day-header:first-child,
+    body.wed-hidden #after-day-5 {
+      display: none;
     }
 
     /* ── Act blocks ── */
@@ -216,6 +288,16 @@
       border: 1px solid #2194ad;
       vertical-align: middle;
     }
+
+    /* Column widths and alignment */
+    #acts-table { table-layout: fixed; }
+    #acts-table th:nth-child(1), #acts-table td:nth-child(1) { width: 80px;  text-align: center; }
+    #acts-table th:nth-child(2), #acts-table td:nth-child(2) { width: 50px;  text-align: center; }
+    #acts-table th:nth-child(3), #acts-table td:nth-child(3) { width: 150px; }
+    #acts-table th:nth-child(4), #acts-table td:nth-child(4) { width: 110px; }
+    #acts-table th:nth-child(5), #acts-table td:nth-child(5) { width: 48px;  text-align: center; }
+    #acts-table th:nth-child(6), #acts-table td:nth-child(6) { width: 48px;  text-align: center; }
+    #acts-table th:nth-child(7), #acts-table td:nth-child(7) { width: 110px; text-align: center; white-space: nowrap; }
 
     #acts-table tbody tr:nth-child(odd)  { background-color: #32c6e0; }
     #acts-table tbody tr:nth-child(even) { background-color: #5dd2e8; }
@@ -321,15 +403,16 @@
 
 <div class="schedule-wrapper">
 
-  <!-- Time labels sit outside the bordered grid -->
+  <!-- Time labels on the left -->
   <div class="time-column">
-    <div class="time-gutter" id="time-gutter"></div>
+    <div class="time-gutter" id="time-gutter-left"></div>
   </div>
 
-  <!-- Bordered grid: header + 8 body columns -->
+  <!-- Bordered grid: header + 12 body columns -->
   <div class="schedule-grid">
 
     <div class="schedule-header">
+      <div class="day-header">WED 7/29</div>
       <div class="day-header">THU 7/30</div>
       <div class="day-header">FRI 7/31</div>
       <div class="day-header">SAT 8/01</div>
@@ -337,6 +420,9 @@
     </div>
 
     <div class="schedule-body">
+      <div class="act-column"   id="day-5-acts"></div>
+      <div class="stage-column" id="day-5-stages"></div>
+
       <div class="act-column"   id="day-0-acts"></div>
       <div class="stage-column" id="day-0-stages"></div>
 
@@ -352,28 +438,59 @@
 
   </div>
 
+  <!-- Time labels sit outside the bordered grid, on the right -->
+  <div class="time-column">
+    <div class="time-gutter" id="time-gutter"></div>
+  </div>
+
+</div>
+
+<!-- ── After-party row (separate, below grid) ── -->
+<div class="schedule-wrapper" id="after-section" style="margin-top: 8px;">
+  <div style="width:56px; flex-shrink:0;"></div>
+  <div class="after-row-grid" id="after-row-grid">
+    <div class="after-cell" id="after-day-5"></div>
+    <div class="after-cell" id="after-day-0"></div>
+    <div class="after-cell" id="after-day-1"></div>
+    <div class="after-cell" id="after-day-2"></div>
+    <div class="after-cell" id="after-day-3"></div>
+  </div>
+  <div style="width:56px; flex-shrink:0;"></div>
 </div>
 
 <!-- ── Add Act form ── -->
-<div id="editor-section" style="max-width:1176px; margin: 24px auto 0; font-family: 'Barlow Condensed', 'Arial Black', sans-serif;">
+<div id="editor-section" style="max-width:1176px; margin: 24px auto 0; font-family: 'Barlow Condensed', 'Arial Black', sans-serif; width: fit-content;">
   <h2 style="font-size:22px; font-weight:800; letter-spacing:0.07em; text-transform:uppercase; margin-bottom:12px; color:#000;">Add Act</h2>
   <div id="add-form">
-    <select name="day">
-      <option value="0">Thursday</option>
+    <select name="day" id="add-day-select">
+      <option value="5">Wednesday</option>
+      <option value="0" selected>Thursday</option>
       <option value="1">Friday</option>
       <option value="2">Saturday</option>
       <option value="3">Sunday</option>
     </select>
+    <label style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:14px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+      <input type="checkbox" id="add-after-check"> After
+    </label>
     <input name="name"  type="text" placeholder="Act name" autocomplete="off">
-    <input name="stage" type="text" placeholder="Stage" autocomplete="off">
-    <input name="start" type="text" placeholder="4:30" autocomplete="off">
-    <input name="end"   type="text" placeholder="5:30 (optional)" autocomplete="off">
+    <select name="stage" id="add-stage-select">
+      <option value="T-MOBILE">T-MOBILE</option>
+      <option value="ALLIANZ">ALLIANZ (LAKESHORE)</option>
+      <option value="PERRY'S">PERRY'S</option>
+      <option value="BMI">BMI</option>
+      <option value="AIRBNB">AIRBNB (GROVE)</option>
+      <option value="TITO'S">TITO'S</option>
+      <option value="BUD LIGHT">BUD LIGHT</option>
+    </select>
+    <input name="stage-after" id="add-stage-text" type="text" placeholder="Stage name" autocomplete="off" style="display:none; width:120px;">
+    <input name="start" id="add-start" type="text" placeholder="4:30" autocomplete="off">
+    <input name="end"   id="add-end"   type="text" placeholder="5:30 (optional)" autocomplete="off">
     <button id="form-submit-btn">Add Act</button>
   </div>
 </div>
 
 <!-- ── Act table (below schedule) ── -->
-<div id="acts-table-section" style="max-width:1176px; margin: 32px auto 0; font-family: 'Barlow Condensed', 'Arial Black', sans-serif;">
+<div id="acts-table-section" style="max-width:800px; margin: 32px auto 0; font-family: 'Barlow Condensed', 'Arial Black', sans-serif;">
   <h2 style="font-size:22px; font-weight:800; letter-spacing:0.07em; text-transform:uppercase; margin-bottom:12px; color:#000;">
     Edit Schedule <button class="btn btn-reset" id="reset-btn">Reset to defaults</button>
   </h2>
@@ -381,6 +498,7 @@
     <thead>
       <tr>
         <th>Day</th>
+        <th>After</th>
         <th>Act Name</th>
         <th>Stage</th>
         <th>Start</th>
@@ -473,29 +591,30 @@
   //  align with the body grid lines.
   // ─────────────────────────────────────────────
   function renderTimeGrid() {
-    const timeGutter   = document.getElementById('time-gutter');
-    const scheduleHeader = document.querySelector('.schedule-header');
-    const allColumns   = document.querySelectorAll('.act-column, .stage-column');
+    const timeGutterRight = document.getElementById('time-gutter');
+    const timeGutterLeft  = document.getElementById('time-gutter-left');
+    const scheduleHeader  = document.querySelector('.schedule-header');
+    const allColumns      = document.querySelectorAll('.act-column, .stage-column');
 
-    // Push the time gutter down to align with the body columns
     const headerHeight = scheduleHeader.offsetHeight;
-    timeGutter.style.marginTop = headerHeight + 'px';
+    timeGutterRight.style.marginTop = headerHeight + 'px';
+    timeGutterLeft.style.marginTop  = headerHeight + 'px';
 
     for (let hour = START_HOUR; hour <= END_HOUR; hour++) {
       const topPx = timeToPixels(`${hour}:00`);
 
-      const label = document.createElement('div');
-      label.className = 'time-label';
-      label.style.top = topPx + 'px';
+      let labelText;
+      if (hour === 12)      { labelText = '12 PM'; }
+      else if (hour === 22) { labelText = '10:00'; }
+      else                  { labelText = `${hour - 12}:00`; }
 
-      if (hour === 12) {
-        label.textContent = '12 PM';
-      } else if (hour === 22) {
-        label.textContent = '10:00';
-      } else {
-        label.textContent = `${hour - 12}:00`;
+      for (const gutter of [timeGutterLeft, timeGutterRight]) {
+        const label = document.createElement('div');
+        label.className   = 'time-label';
+        label.style.top   = topPx + 'px';
+        label.textContent = labelText;
+        gutter.appendChild(label);
       }
-      timeGutter.appendChild(label);
 
       allColumns.forEach(column => {
         const line = document.createElement('div');
@@ -509,12 +628,84 @@
   // ─────────────────────────────────────────────
   //  Render act + stage blocks from ACTS array
   // ─────────────────────────────────────────────
+  function updateWednesdayVisibility() {
+    const hasWedAfterActs = acts.some(a => a.after && a.day === 5);
+    document.body.classList.toggle('wed-hidden', !hasWedAfterActs);
+  }
+
+  function renderAfterFooter() {
+    const dayOrder       = [5, 0, 1, 2, 3];
+    const filledDays     = dayOrder.filter(day => acts.some(a => a.after && a.day === day));
+    const firstFilledDay = filledDays[0];
+    const lastFilledDay  = filledDays[filledDays.length - 1];
+
+    for (const day of dayOrder) {
+      const cell = document.getElementById(`after-day-${day}`);
+      cell.innerHTML = '';
+      const dayAfterActs = acts.filter(a => a.after && a.day === day);
+
+      const actCol   = document.createElement('div');
+      const stageCol = document.createElement('div');
+      actCol.className   = 'after-cell-act';
+      stageCol.className = 'after-cell-stage';
+
+      dayAfterActs.forEach(act => {
+        const nameEl = document.createElement('div');
+        nameEl.className   = 'after-cell-item';
+        nameEl.textContent = act.name;
+        actCol.appendChild(nameEl);
+
+        const stageEl = document.createElement('div');
+        stageEl.className   = 'after-cell-item';
+        stageEl.textContent = act.stage;
+        stageCol.appendChild(stageEl);
+      });
+
+      if (dayAfterActs.length === 0) {
+        cell.style.borderTop           = '';
+        cell.style.borderBottom        = '';
+        cell.style.borderLeft          = '';
+        cell.style.borderLeftColor     = 'transparent';
+        actCol.style.backgroundColor   = 'transparent';
+        actCol.style.borderRightColor  = 'transparent';
+        stageCol.style.backgroundColor = 'transparent';
+        stageCol.style.borderRight     = '';
+      } else {
+        const isFirst      = (day === firstFilledDay);
+        const isLast       = (day === lastFilledDay);
+        const dayIdx       = dayOrder.indexOf(day);
+        const nextDay      = dayOrder[dayIdx + 1];
+        const nextIsFilled = nextDay !== undefined && filledDays.includes(nextDay);
+
+        cell.style.borderTop    = '2px solid #2194ad';
+        cell.style.borderBottom = '2px solid #2194ad';
+        cell.style.borderLeft   = isFirst ? '2px solid #2194ad' : '1px solid #2194ad';
+
+        actCol.style.backgroundColor  = '';
+        actCol.style.borderRightColor = '';
+        stageCol.style.backgroundColor = '';
+
+        if (isLast)             { stageCol.style.borderRight = '2px solid #2194ad'; }
+        else if (!nextIsFilled) { stageCol.style.borderRight = '1px solid #2194ad'; }
+        else                    { stageCol.style.borderRight = ''; }
+      }
+
+      cell.appendChild(actCol);
+      cell.appendChild(stageCol);
+    }
+
+    const hasAnyAfterActs = acts.some(a => a.after);
+    document.getElementById('after-section').style.display = hasAnyAfterActs ? '' : 'none';
+    updateWednesdayVisibility();
+  }
+
   function clearActBlocks() {
     document.querySelectorAll('.act-block, .stage-block').forEach(el => el.remove());
   }
 
   function renderActs() {
     acts.forEach(act => {
+      if (act.after || !act.start) { return; }
       const actColumn   = document.getElementById(`day-${act.day}-acts`);
       const stageColumn = document.getElementById(`day-${act.day}-stages`);
       if (!actColumn || !stageColumn) {
@@ -571,7 +762,7 @@
   // ─────────────────────────────────────────────
   //  Editor
   // ─────────────────────────────────────────────
-  const DAY_LABELS = ['Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const DAY_LABELS = ['Thursday', 'Friday', 'Saturday', 'Sunday', '', 'Wednesday'];
   let editingIndex = -1;
 
   function renderTable() {
@@ -580,41 +771,52 @@
 
     const sorted = acts
       .map((act, originalIndex) => ({ act, originalIndex }))
-      .sort((a, b) => a.act.day - b.act.day || parseTimeToMinutes(a.act.start) - parseTimeToMinutes(b.act.start));
+      .sort((a, b) => a.act.day - b.act.day || parseTimeToMinutes(a.act.start || '12:00') - parseTimeToMinutes(b.act.start || '12:00'));
 
     sorted.forEach(({ act, originalIndex }) => {
       const row = document.createElement('tr');
 
       if (originalIndex === editingIndex) {
-        // Inline edit row
         row.classList.add('editing-row');
+        const isAfterAct = !!act.after;
         row.innerHTML = `
-          <td><select name="ie-day">
-            <option value="0">Thursday</option>
-            <option value="1">Friday</option>
-            <option value="2">Saturday</option>
-            <option value="3">Sunday</option>
-          </select></td>
-          <td><input name="ie-name"  type="text" autocomplete="off"></td>
-          <td><input name="ie-stage" type="text" autocomplete="off"></td>
-          <td><input name="ie-start" type="text" autocomplete="off"></td>
-          <td><input name="ie-end"   type="text" autocomplete="off"></td>
+          <td style="text-align:center">${DAY_LABELS[act.day] || ''}</td>
+          <td style="text-align:center"><input type="checkbox" id="ie-after-check" onchange="inlineEditAfterChange(this)"></td>
+          <td><input name="ie-name" type="text" autocomplete="off"></td>
+          <td>
+            <select id="ie-stage-sel" ${isAfterAct ? 'style="display:none"' : ''}>
+              <option value="T-MOBILE">T-MOBILE</option>
+              <option value="ALLIANZ">ALLIANZ</option>
+              <option value="PERRY'S">PERRY'S</option>
+              <option value="BMI">BMI</option>
+              <option value="AIRBNB">AIRBNB</option>
+              <option value="TITO'S">TITO'S</option>
+              <option value="BUD LIGHT">BUD LIGHT</option>
+            </select>
+            <input id="ie-stage-txt" type="text" autocomplete="off" ${isAfterAct ? '' : 'style="display:none"'}>
+          </td>
+          <td><input name="ie-start" type="text" autocomplete="off" ${isAfterAct ? 'disabled style="opacity:0.4"' : ''}></td>
+          <td><input name="ie-end"   type="text" autocomplete="off" ${isAfterAct ? 'disabled style="opacity:0.4"' : ''}></td>
           <td style="white-space:nowrap">
             <button class="btn" onclick="saveInlineEdit(${originalIndex})">Save</button>
             <button class="btn btn-delete" onclick="cancelInlineEdit()">Cancel</button>
           </td>`;
-        // Set values safely after innerHTML to avoid escaping issues
-        row.querySelector('[name=ie-day]').value   = act.day;
-        row.querySelector('[name=ie-name]').value  = act.name;
-        row.querySelector('[name=ie-stage]').value = act.stage;
-        row.querySelector('[name=ie-start]').value = act.start;
-        row.querySelector('[name=ie-end]').value   = act.end || '';
+        row.querySelector('#ie-after-check').checked = isAfterAct;
+        row.querySelector('[name=ie-name]').value   = act.name;
+        if (isAfterAct) {
+          row.querySelector('#ie-stage-txt').value = act.stage || '';
+        } else {
+          row.querySelector('#ie-stage-sel').value  = act.stage || '';
+        }
+        row.querySelector('[name=ie-start]').value = act.start || '';
+        row.querySelector('[name=ie-end]').value   = act.end   || '';
       } else {
         row.innerHTML = `
-          <td>${DAY_LABELS[act.day]}</td>
+          <td>${DAY_LABELS[act.day] || ''}</td>
+          <td style="text-align:center"><input type="checkbox" disabled ${act.after ? 'checked' : ''}></td>
           <td>${act.name}</td>
           <td>${act.stage}</td>
-          <td>${act.start}</td>
+          <td>${act.start || ''}</td>
           <td>${act.end || ''}</td>
           <td style="white-space:nowrap">
             <button class="btn" onclick="startEdit(${originalIndex})">Edit</button>
@@ -631,18 +833,36 @@
     renderTable();
   }
 
+  function inlineEditAfterChange(checkbox) {
+    const row = checkbox.closest('tr');
+    row.querySelector('#ie-stage-sel').style.display = checkbox.checked ? 'none' : '';
+    row.querySelector('#ie-stage-txt').style.display = checkbox.checked ? ''     : 'none';
+    const startInput = row.querySelector('[name=ie-start]');
+    const endInput   = row.querySelector('[name=ie-end]');
+    startInput.value         = '';
+    endInput.value           = '';
+    startInput.disabled      = checkbox.checked;
+    endInput.disabled        = checkbox.checked;
+    startInput.style.opacity = checkbox.checked ? '0.4' : '';
+    endInput.style.opacity   = checkbox.checked ? '0.4' : '';
+  }
+
   function saveInlineEdit(index) {
-    const tbody = document.getElementById('acts-tbody');
-    const day   = parseInt(tbody.querySelector('[name=ie-day]').value);
-    const name  = tbody.querySelector('[name=ie-name]').value.trim();
-    const stage = tbody.querySelector('[name=ie-stage]').value.trim();
-    const start = tbody.querySelector('[name=ie-start]').value.trim();
-    const end   = tbody.querySelector('[name=ie-end]').value.trim() || undefined;
-    if (!name || !stage || !start) { return; }
-    acts[index] = { day, name, stage, start, end };
+    const tbody   = document.getElementById('acts-tbody');
+    const day     = acts[index].day;
+    const after   = tbody.querySelector('#ie-after-check').checked;
+    const name    = tbody.querySelector('[name=ie-name]').value.trim();
+    const stage   = after
+      ? tbody.querySelector('#ie-stage-txt').value.trim()
+      : tbody.querySelector('#ie-stage-sel').value.trim();
+    const start = tbody.querySelector('[name=ie-start]').value.trim() || undefined;
+    const end   = tbody.querySelector('[name=ie-end]').value.trim()   || undefined;
+    if (!name || !stage) { return; }
+    acts[index] = { day, after, name, stage, start, end };
     saveActs();
     clearActBlocks();
     renderActs();
+    renderAfterFooter();
     editingIndex = -1;
     renderTable();
   }
@@ -657,26 +877,55 @@
     saveActs();
     clearActBlocks();
     renderActs();
+    renderAfterFooter();
     renderTable();
   }
+
+  document.getElementById('add-day-select').addEventListener('change', function () {
+    const afterCheck = document.getElementById('add-after-check');
+    if (this.value === '5') {
+      afterCheck.checked = true;
+      afterCheck.disabled = true;
+      afterCheck.dispatchEvent(new Event('change'));
+    } else {
+      afterCheck.disabled = false;
+    }
+  });
+
+  document.getElementById('add-after-check').addEventListener('change', function () {
+    document.getElementById('add-stage-select').style.display = this.checked ? 'none' : '';
+    document.getElementById('add-stage-text').style.display   = this.checked ? ''     : 'none';
+    const startInput = document.getElementById('add-start');
+    const endInput   = document.getElementById('add-end');
+    startInput.value         = '';
+    endInput.value           = '';
+    startInput.disabled      = this.checked;
+    endInput.disabled        = this.checked;
+    startInput.style.opacity = this.checked ? '0.4' : '';
+    endInput.style.opacity   = this.checked ? '0.4' : '';
+  });
 
   document.getElementById('form-submit-btn').addEventListener('click', () => {
     const form  = document.getElementById('add-form');
     const day   = parseInt(form.querySelector('[name=day]').value);
+    const after = document.getElementById('add-after-check').checked;
     const name  = form.querySelector('[name=name]').value.trim();
-    const stage = form.querySelector('[name=stage]').value.trim();
-    const start = form.querySelector('[name=start]').value.trim();
-    const end   = form.querySelector('[name=end]').value.trim() || undefined;
-    if (!name || !stage || !start) { return; }
-    acts.push({ day, name, stage, start, end });
+    const stage = after
+      ? document.getElementById('add-stage-text').value.trim()
+      : document.getElementById('add-stage-select').value.trim();
+    const start = document.getElementById('add-start').value.trim() || undefined;
+    const end   = document.getElementById('add-end').value.trim()   || undefined;
+    if (!name || !stage) { return; }
+    acts.push({ day, after, name, stage, start, end });
     saveActs();
     clearActBlocks();
     renderActs();
+    renderAfterFooter();
     renderTable();
     form.querySelector('[name=name]').value  = '';
-    form.querySelector('[name=stage]').value = '';
     form.querySelector('[name=start]').value = '';
     form.querySelector('[name=end]').value   = '';
+    document.getElementById('add-stage-text').value = '';
   });
 
   document.getElementById('reset-btn').addEventListener('click', () => {
@@ -685,6 +934,7 @@
     saveActs();
     clearActBlocks();
     renderActs();
+    renderAfterFooter();
     renderTable();
   });
 
@@ -694,7 +944,9 @@
   document.addEventListener('DOMContentLoaded', () => {
     renderTimeGrid();
     renderActs();
+    renderAfterFooter();
     renderTable();
+    updateWednesdayVisibility();
   });
 </script>
 
