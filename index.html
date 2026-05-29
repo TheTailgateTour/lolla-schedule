@@ -1127,16 +1127,7 @@
           <td style="text-align:center"><input type="checkbox" id="ie-after-check" onchange="inlineEditAfterChange(this)"></td>
           <td><input name="ie-name" type="text" autocomplete="off"></td>
           <td>
-            <select id="ie-stage-sel" ${isAfterAct ? 'style="display:none"' : ''}>
-              <option value="T-MOBILE">T-MOBILE</option>
-              <option value="ALLIANZ">ALLIANZ (LAKESHORE)</option>
-              <option value="PERRY'S">PERRY'S</option>
-              <option value="BMI">BMI</option>
-              <option value="AIRBNB">AIRBNB (GROVE)</option>
-              <option value="TITO'S">TITO'S</option>
-              <option value="BUD LIGHT">BUD LIGHT</option>
-            </select>
-            <input id="ie-stage-txt" type="text" autocomplete="off" ${isAfterAct ? '' : 'style="display:none"'}>
+            <input id="ie-stage-input" type="text" autocomplete="off">
           </td>
           <td><input name="ie-start" type="text" autocomplete="off" ${isAfterAct ? 'disabled style="opacity:0.4"' : ''}></td>
           <td><input name="ie-end"   type="text" autocomplete="off" ${isAfterAct ? 'disabled style="opacity:0.4"' : ''}></td>
@@ -1146,11 +1137,7 @@
           </td>`;
         row.querySelector('#ie-after-check').checked = isAfterAct;
         row.querySelector('[name=ie-name]').value   = act.name;
-        if (isAfterAct) {
-          row.querySelector('#ie-stage-txt').value = act.stage || '';
-        } else {
-          row.querySelector('#ie-stage-sel').value  = act.stage || '';
-        }
+        row.querySelector('#ie-stage-input').value  = act.stage || '';
         row.querySelector('[name=ie-start]').value = act.start || '';
         row.querySelector('[name=ie-end]').value   = act.end   || '';
       } else {
@@ -1178,8 +1165,6 @@
 
   function inlineEditAfterChange(checkbox) {
     const row = checkbox.closest('tr');
-    row.querySelector('#ie-stage-sel').style.display = checkbox.checked ? 'none' : '';
-    row.querySelector('#ie-stage-txt').style.display = checkbox.checked ? ''     : 'none';
     const startInput = row.querySelector('[name=ie-start]');
     const endInput   = row.querySelector('[name=ie-end]');
     startInput.value         = '';
@@ -1195,9 +1180,7 @@
     const day     = acts[index].day;
     const after   = tbody.querySelector('#ie-after-check').checked;
     const name    = tbody.querySelector('[name=ie-name]').value.trim();
-    const stage   = after
-      ? tbody.querySelector('#ie-stage-txt').value.trim()
-      : tbody.querySelector('#ie-stage-sel').value.trim();
+    const stage   = tbody.querySelector('#ie-stage-input').value.trim();
     const start = tbody.querySelector('[name=ie-start]').value.trim() || undefined;
     const end   = tbody.querySelector('[name=ie-end]').value.trim()   || undefined;
     if (!name || !stage) { return; }
