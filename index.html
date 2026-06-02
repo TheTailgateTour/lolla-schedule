@@ -414,6 +414,27 @@
 
     #form-submit-btn:hover { background-color: #b8c900; }
 
+    /* ── Stage count table ── */
+    #stage-count-table {
+      border-collapse: collapse;
+      font-size: 14px;
+      table-layout: fixed;
+    }
+
+    #stage-count-table td {
+      padding: 6px 10px;
+      border: 1px solid #2194ad;
+      vertical-align: middle;
+      font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+      font-weight: 700;
+    }
+
+    #stage-count-table td:nth-child(1) { width: 160px; }
+    #stage-count-table td:nth-child(2) { width: 48px; text-align: center; }
+
+    #stage-count-table tbody tr:nth-child(odd)  { background-color: #32c6e0; }
+    #stage-count-table tbody tr:nth-child(even) { background-color: #5dd2e8; }
+
     /* ── Inline edit inputs inside table rows ── */
     #acts-table td input,
     #acts-table td select {
@@ -521,7 +542,7 @@
 </div>
 
 <!-- ── Act table (below schedule) ── -->
-<div id="acts-table-section" style="max-width:800px; margin: 32px auto 0; font-family: 'Barlow Condensed', 'Arial Black', sans-serif;">
+<div id="acts-table-section" style="max-width:800px; margin:32px auto 0; font-family:'Barlow Condensed','Arial Black',sans-serif; position:relative;">
   <h2 style="font-size:22px; font-weight:800; letter-spacing:0.07em; text-transform:uppercase; margin-bottom:12px; color:#000;">
     Edit Schedule <button class="btn btn-reset" id="reset-btn">Reset to defaults</button>
   </h2>
@@ -539,6 +560,12 @@
     </thead>
     <tbody id="acts-tbody"></tbody>
   </table>
+  <div id="stage-count-section" style="position:absolute; left:100%; top:0; padding-left:24px; white-space:nowrap;">
+    <h2 style="font-size:22px; font-weight:800; letter-spacing:0.07em; text-transform:uppercase; margin-bottom:12px; color:#000;">Stages</h2>
+    <table id="stage-count-table">
+      <tbody id="stage-count-tbody"></tbody>
+    </table>
+  </div>
 </div>
 
 <script>
@@ -1099,6 +1126,32 @@
   }
 
   // ─────────────────────────────────────────────
+  //  Stage count table
+  // ─────────────────────────────────────────────
+  const STAGE_ALIAS_MAP = {
+    'ALLIANZ': 'ALLIANZ (LAKESHORE)',
+    'AIRBNB':  'AIRBNB (GROVE)',
+  };
+
+  function renderStageCountTable() {
+    const stageCounts = {};
+    MAIN_STAGES.forEach(stageName => { stageCounts[stageName] = 0; });
+    acts.forEach(act => {
+      if (act.after) { return; }
+      const canonicalStage = STAGE_ALIAS_MAP[act.stage] || act.stage;
+      if (!stageCounts.hasOwnProperty(canonicalStage)) { return; }
+      stageCounts[canonicalStage] += 1;
+    });
+    const tbody = document.getElementById('stage-count-tbody');
+    tbody.innerHTML = '';
+    MAIN_STAGES.forEach(stageName => {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${stageName}</td><td>${stageCounts[stageName]}</td>`;
+      tbody.appendChild(row);
+    });
+  }
+
+  // ─────────────────────────────────────────────
   //  Editor
   // ─────────────────────────────────────────────
   const DAY_LABELS = ['Thursday', 'Friday', 'Saturday', 'Sunday', '', 'Wednesday'];
@@ -1195,6 +1248,7 @@
     renderAfterFooter();
     editingIndex = -1;
     renderTable();
+    renderStageCountTable();
   }
 
   function cancelInlineEdit() {
@@ -1209,6 +1263,7 @@
     renderActs();
     renderAfterFooter();
     renderTable();
+    renderStageCountTable();
   }
 
   document.getElementById('add-day-select').addEventListener('change', function () {
@@ -1302,6 +1357,7 @@
     renderActs();
     renderAfterFooter();
     renderTable();
+    renderStageCountTable();
     form.querySelector('[name=name]').value  = '';
     form.querySelector('[name=start]').value = '';
     form.querySelector('[name=end]').value   = '';
@@ -1316,6 +1372,7 @@
     renderActs();
     renderAfterFooter();
     renderTable();
+    renderStageCountTable();
   });
 
   // ─────────────────────────────────────────────
@@ -1326,6 +1383,7 @@
     renderActs();
     renderAfterFooter();
     renderTable();
+    renderStageCountTable();
     updateWednesdayVisibility();
   });
 </script>
