@@ -73,7 +73,6 @@
     }
     body.wed-hidden .schedule-grid {
       border-left-color: #2194ad;
-      border-bottom-color: #2194ad;
     }
 
     .schedule-header,
@@ -101,6 +100,7 @@
       height: 900px;
       background-color: #32c6e0;
       border-left: 1px solid #2194ad;
+      border-bottom: 1px solid #2194ad;
     }
 
     .act-column:first-child { border-left: none; }
@@ -109,6 +109,7 @@
     #day-5-acts,
     #day-5-stages {
       background-color: #ebade6;
+      border-bottom: none;
     }
     #day-5-stages {
       border-left-color: #ebade6;
@@ -126,6 +127,7 @@
       height: 900px;
       background-color: #32c6e0;
       border-left: 1px solid #2194ad;
+      border-bottom: 1px solid #2194ad;
     }
 
     /* ── After row (standalone below grid) ── */
@@ -136,16 +138,8 @@
       overflow: hidden;
     }
 
-    .after-cell {
-      grid-column: span 2;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-left: 1px solid #2194ad;
-      min-height: 25px;
-    }
-
-    .after-cell-act,
-    .after-cell-stage {
+    .after-act-cell,
+    .after-stage-cell {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -154,8 +148,18 @@
       gap: 2px;
     }
 
-    .after-cell-act   { background-color: #a2daeb; border-right: 1px solid #2194ad; }
-    .after-cell-stage { background-color: #50ab9a; }
+    .after-act-cell   { background-color: #a2daeb; }
+    .after-stage-cell { background-color: #50ab9a; position: relative; }
+
+    .after-stage-cell.right-edge::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: -1px;
+      height: calc(100% + 2px);
+      width: 1px;
+      background-color: #2194ad;
+    }
 
     .after-cell-item {
       font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
@@ -180,13 +184,14 @@
     body.wed-hidden .schedule-header,
     body.wed-hidden .schedule-body,
     body.wed-hidden .after-row-grid {
-      grid-template-columns: repeat(4, 150px 130px);
+      grid-template-columns: repeat(4, 150px 120px);
     }
 
     body.wed-hidden #day-5-acts,
     body.wed-hidden #day-5-stages,
     body.wed-hidden .schedule-header .day-header:first-child,
-    body.wed-hidden #after-day-5 {
+    body.wed-hidden #after-act-5,
+    body.wed-hidden #after-stage-5 {
       display: none;
     }
 
@@ -502,15 +507,20 @@
 
 <!-- ── After-party row (separate, below grid) ── -->
 <div class="schedule-wrapper" id="after-section" style="margin-top: 8px;">
-  <div style="width:56px; flex-shrink:0;"></div>
+  <div style="width:57px; flex-shrink:0;"></div>
   <div class="after-row-grid" id="after-row-grid">
-    <div class="after-cell" id="after-day-5"></div>
-    <div class="after-cell" id="after-day-0"></div>
-    <div class="after-cell" id="after-day-1"></div>
-    <div class="after-cell" id="after-day-2"></div>
-    <div class="after-cell" id="after-day-3"></div>
+    <div class="after-act-cell"   id="after-act-5"></div>
+    <div class="after-stage-cell" id="after-stage-5"></div>
+    <div class="after-act-cell"   id="after-act-0"></div>
+    <div class="after-stage-cell" id="after-stage-0"></div>
+    <div class="after-act-cell"   id="after-act-1"></div>
+    <div class="after-stage-cell" id="after-stage-1"></div>
+    <div class="after-act-cell"   id="after-act-2"></div>
+    <div class="after-stage-cell" id="after-stage-2"></div>
+    <div class="after-act-cell"   id="after-act-3"></div>
+    <div class="after-stage-cell" id="after-stage-3"></div>
   </div>
-  <div style="width:56px; flex-shrink:0;"></div>
+  <div style="width:57px; flex-shrink:0;"></div>
 </div>
 
 <!-- ── Add Act form ── -->
@@ -1007,65 +1017,61 @@
   }
 
   function renderAfterFooter() {
-    const dayOrder       = [5, 0, 1, 2, 3];
-    const filledDays     = dayOrder.filter(day => acts.some(a => a.after && a.day === day));
-    const firstFilledDay = filledDays[0];
-    const lastFilledDay  = filledDays[filledDays.length - 1];
+    const dayOrder      = [5, 0, 1, 2, 3];
+    const filledDays    = dayOrder.filter(day => acts.some(a => a.after && a.day === day));
+    const lastFilledDay = filledDays[filledDays.length - 1];
 
-    for (const day of dayOrder) {
-      const cell = document.getElementById(`after-day-${day}`);
-      cell.innerHTML = '';
+    for (let dayIdx = 0; dayIdx < dayOrder.length; dayIdx++) {
+      const day       = dayOrder[dayIdx];
+      const actCell   = document.getElementById(`after-act-${day}`);
+      const stageCell = document.getElementById(`after-stage-${day}`);
+      actCell.innerHTML   = '';
+      stageCell.innerHTML = '';
+
       const dayAfterActs = acts.filter(a => a.after && a.day === day);
 
-      const actCol   = document.createElement('div');
-      const stageCol = document.createElement('div');
-      actCol.className   = 'after-cell-act';
-      stageCol.className = 'after-cell-stage';
-
-      dayAfterActs.forEach(act => {
-        const nameEl = document.createElement('div');
-        nameEl.className   = 'after-cell-item';
-        nameEl.textContent = act.name;
-        actCol.appendChild(nameEl);
-
-        const stageEl = document.createElement('div');
-        stageEl.className   = 'after-cell-item';
-        stageEl.textContent = act.stage;
-        stageCol.appendChild(stageEl);
-      });
-
       if (dayAfterActs.length === 0) {
-        cell.style.borderTop           = '';
-        cell.style.borderBottom        = '';
-        cell.style.borderLeft          = '';
-        cell.style.borderLeftColor     = 'transparent';
-        actCol.style.backgroundColor   = 'transparent';
-        actCol.style.borderRightColor  = 'transparent';
-        stageCol.style.backgroundColor = 'transparent';
-        stageCol.style.borderRight     = '';
+        actCell.style.backgroundColor   = 'transparent';
+        actCell.style.borderLeft        = 'none';
+        actCell.style.borderTop         = '';
+        actCell.style.borderBottom      = '';
+        stageCell.style.backgroundColor = 'transparent';
+        stageCell.style.borderLeft      = 'none';
+        stageCell.style.borderTop       = '';
+        stageCell.style.borderBottom    = '';
+        stageCell.classList.remove('right-edge');
       } else {
-        const isFirst      = (day === firstFilledDay);
         const isLast       = (day === lastFilledDay);
-        const dayIdx       = dayOrder.indexOf(day);
         const nextDay      = dayOrder[dayIdx + 1];
         const nextIsFilled = nextDay !== undefined && filledDays.includes(nextDay);
 
-        cell.style.borderTop    = '1px solid #2194ad';
-        cell.style.borderBottom = '1px solid #2194ad';
-        cell.style.borderLeft   = '1px solid #2194ad';
+        actCell.style.backgroundColor   = '';
+        actCell.style.borderLeft        = '1px solid #2194ad';
+        actCell.style.borderTop         = '1px solid #2194ad';
+        actCell.style.borderBottom      = '1px solid #2194ad';
+        stageCell.style.backgroundColor = '';
+        stageCell.style.borderLeft      = '1px solid #2194ad';
+        stageCell.style.borderTop       = '1px solid #2194ad';
+        stageCell.style.borderBottom    = '1px solid #2194ad';
+        stageCell.classList.toggle('right-edge', isLast || !nextIsFilled);
 
-        actCol.style.backgroundColor  = '';
-        actCol.style.borderRightColor = '';
-        stageCol.style.backgroundColor = '';
+        dayAfterActs.forEach(act => {
+          const nameEl = document.createElement('div');
+          nameEl.className   = 'after-cell-item';
+          nameEl.textContent = act.name;
+          actCell.appendChild(nameEl);
 
-        if (isLast)             { stageCol.style.borderRight = '1px solid #2194ad'; }
-        else if (!nextIsFilled) { stageCol.style.borderRight = '1px solid #2194ad'; }
-        else                    { stageCol.style.borderRight = ''; }
+          const stageEl = document.createElement('div');
+          stageEl.className   = 'after-cell-item';
+          stageEl.textContent = act.stage;
+          stageCell.appendChild(stageEl);
+        });
       }
-
-      cell.appendChild(actCol);
-      cell.appendChild(stageCol);
     }
+
+    // Sunday-as-last edge case: no empty act cell follows, use grid's own border-right
+    document.getElementById('after-row-grid').style.borderRight =
+      (lastFilledDay === 3 && filledDays.length > 0) ? '1px solid #2194ad' : '';
 
     const hasAnyAfterActs = acts.some(a => a.after);
     document.getElementById('after-section').style.display = hasAnyAfterActs ? '' : 'none';
