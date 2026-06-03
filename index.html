@@ -877,9 +877,15 @@
   function updateActNameDropdown(filterText) {
     const selectedDay = parseInt(document.getElementById('add-day-select').value);
     const isAfter = document.getElementById('add-after-check').checked;
+    const alreadyAdded = new Set(
+      acts
+        .filter(a => a.day === selectedDay && a.after === isAfter)
+        .map(a => a.name)
+    );
     const matches = ACTS_MASTER_LIST
       .filter(entry => {
         if (entry.day !== selectedDay || entry.after !== isAfter) { return false; }
+        if (alreadyAdded.has(entry.name)) { return false; }
         if (!filterText) { return true; }
         return entry.name.toLowerCase().includes(filterText.toLowerCase());
       })
